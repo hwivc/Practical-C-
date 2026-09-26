@@ -127,8 +127,7 @@ Every lesson has three parts:
 ---
 
 !!! quote "Community Edition"
-    This course is written and maintained by **Tambu Precious**
-    ([LinkedIn](https://cm.linkedin.com/in/tambu-precious-29bb67217)), a core member of the
+    This course is written and maintained by the
     **[Hardware Innovation Valley Community (HWIVC)](https://hwivc.org/)** in Buea, Cameroon, as part of a
     community effort to make practical robotics and embedded-systems education accessible to everyone.
 
