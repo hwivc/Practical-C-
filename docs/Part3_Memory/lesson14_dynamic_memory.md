@@ -1,152 +1,284 @@
-# Lesson 14: Stack vs. Heap & Memory Safety
+# Lesson 14: Stack, Heap & 2 KB of RAM
 
-To write safe C++ code, you must understand where variables live in memory. C++ splits application RAM into two primary areas: the **Stack** and the **Heap**.
+<div class="lesson-meta"><span>⏱ 75 min</span><span>🎯 Intermediate</span><span>🧩 Prerequisite: Lesson 13</span></div>
 
-In this lesson, we will compare Stack and Heap allocations, learn the syntax of dynamic allocation (`new` and `delete`), and discuss why dynamic heap allocation is highly discouraged in embedded systems and robotics.
+!!! abstract "What you'll learn"
+    - The three memories in an Arduino: **flash**, **SRAM** and **EEPROM**
+    - How the **stack** works (function calls, local variables) and how it overflows
+    - The **heap**: `new` / `delete`, memory leaks, and fragmentation
+    - Why embedded code avoids dynamic allocation, and what to do instead
+    - The `F()` macro, `PROGMEM`, and measuring free RAM on a real board
+    - RAII and smart pointers on the PC (and why they're missing on AVR)
 
 ---
 
-## Memory Areas: Stack vs. Heap
+## Three kinds of memory
 
-| Feature | The Stack | The Heap |
-| :--- | :--- | :--- |
-| **Size** | Small (typically 1–8 MB on PCs, bytes on Arduino) | Large (gigabytes on PCs, limited on Arduino) |
-| **Allocation** | Automatic (handled by the compiler) | Manual (controlled by the programmer) |
-| **Speed** | Extremely fast (simple pointer movement) | Slower (requires searching for free blocks) |
-| **Lifetime** | Tied to scope (destroyed at `}`) | Persistent (exists until explicitly deleted) |
+<figure markdown>
+![Arduino memory map](../images/memory_uno.svg){ .diagram }
+<figcaption>The UNO has 32 KB of flash for code, only 2 KB of SRAM for variables, and 1 KB of EEPROM for settings that survive power-off.</figcaption>
+</figure>
 
-```text
-  RAM Layout:
-  +---------------------------------------------------+
-  | Stack (Grows Down) | ... Free RAM ... | Heap (Up) |
-  +---------------------------------------------------+
+| Memory | Size (UNO) | Holds | Survives power-off? | Speed |
+|---|---|---|:-:|---|
+| **Flash** | 32 KB | your compiled program, constant tables (`PROGMEM`), `F("text")` | ✅ | read fast, write only when uploading |
+| **SRAM** | **2 KB** | all variables: globals, stack, heap | ❌ | fast |
+| **EEPROM** | 1 KB | calibration, saved poses | ✅ | slow writes, ~100 000 write cycles |
+
+When you verify a sketch, the IDE reports *"Global variables use N bytes of dynamic memory"*. That's the fixed part of
+SRAM. The **stack** and **heap** share whatever is left, and the IDE can't predict how much they'll need.
+
+---
+
+## The stack
+
+Every time a function is called, a **stack frame** is pushed onto the stack. It holds the function's parameters, local
+variables and the return address. When the function returns, its frame is popped and the memory is instantly reusable.
+
+```mermaid
+flowchart TB
+    subgraph S["Stack while pickAndPlace() → moveTo() → safeDelay() runs"]
+        direction TB
+        F3["safeDelay frame<br/>ms, t, currentTime"]
+        F2["moveTo frame<br/>base, shoulder, … waitMs"]
+        F1["pickAndPlace frame<br/>local Pose target"]
+        F0["loop frame"]
+        FM["main frame (Arduino core)"]
+    end
+    F3 --- F2 --- F1 --- F0 --- FM
+    style F3 fill:#fde3d3,stroke:#e8601c
 ```
 
----
+The stack is **fast** (no searching for space) and **automatic** (no clean-up needed), but it's **small**, and big local
+variables or deep call chains can exhaust it:
 
-## Stack Allocation (Automatic Memory)
-
-All variables declared inside functions are allocated on the Stack. 
-
-```cpp
-void moveArm() {
-    int localAngle = 90; // Stack allocation
-    // localAngle exists here
-} // localAngle is automatically deleted!
-```
-Stack allocation is fast and safe. You cannot forget to free stack memory; C++ handles it automatically.
-
----
-
-## Heap Allocation (Dynamic Memory)
-
-If you need data to survive beyond the scope of the function that created it, or you need to allocate a variable whose size is only known at runtime, you allocate it on the **Heap**.
-
-In C++, heap allocation is managed using two keywords:
-* **`new`:** Allocates memory on the heap and returns a pointer to it.
-* **`delete`:** Frees the allocated heap memory, returning it to the system.
-
-```cpp
+```cpp title="stack_depth.cpp"
 #include <iostream>
 
+int depth = 0;
+
+void recurse(int n) {
+    int local[32];               // 128 bytes per call on a PC (64 on the UNO)
+    local[0] = n;
+    depth = n;
+    if (n < 1000) recurse(n + 1);
+    local[1] = local[0];         // use the array so it's kept
+}
+
 int main() {
-    // 1. Allocate an integer on the Heap
-    int* heapPtr = new int(90); 
-
-    std::cout << "Heap Value: " << *heapPtr << std::endl;
-
-    // 2. You must manually free this memory when done!
-    delete heapPtr; 
-
-    // 3. Prevent dangling pointer by setting it to nullptr
-    heapPtr = nullptr; 
-
+    recurse(1);
+    std::cout << "reached depth " << depth << " (fine on a PC with ~1 MB of stack)\n";
+    std::cout << "on a UNO, 1000 frames x ~70 bytes = 70 KB: the stack would overflow 35 times over\n";
     return 0;
 }
 ```
 
-### The Pitfalls of Dynamic Memory:
-1. **Memory Leaks:** If you allocate memory with `new` and lose the pointer (or forget to call `delete`), that memory remains occupied. If this happens in a loop, your program will eventually run out of RAM and crash.
-2. **Dangling Pointers:** If you call `delete` on a pointer but continue to use it, you will read or write to unallocated memory, causing undefined behavior.
+!!! danger "Stack overflow on a microcontroller"
+    There's no operating system to stop the program with an error. The stack simply grows down into the heap and the
+    global variables, **silently overwriting them**. Symptoms: variables changing "by themselves", random resets, a
+    servo suddenly moving to a strange angle. Avoid recursion and large local arrays in embedded code.
 
 ---
 
-## Why Embedded Systems Avoid the Heap
+## The heap: `new` and `delete`
 
-In standard computer programming, heap allocation is commonplace. In embedded robotics (like Arduino), **dynamic memory allocation is highly avoided**.
+The **heap** is memory you request manually at run time:
 
-### 1. Extremely Limited RAM
-An Arduino Uno has only 2,048 bytes (2KB) of RAM. A single memory leak can exhaust this memory in milliseconds.
-
-### 2. Heap Fragmentation
-The heap is shared. If you allocate and deallocate objects of different sizes repeatedly, your memory becomes "fragmented"—broken into tiny pockets of free space separated by allocated blocks. 
-
-Eventually, you might attempt to allocate a small object, and even though there is enough total free memory, the allocation will fail because there is no **single, contiguous block** large enough. This causes the microcontroller to crash or lock up unpredictably.
-
-```text
-Fragmented Memory:
-[ Allocated ] [ Free: 2B ] [ Allocated ] [ Free: 2B ] [ Allocated ]
-(Total Free Space = 4B, but you cannot allocate a single 3B variable!)
-```
-
----
-
-## Connection to the BraccioV2 Library
-
-To guarantee stability, the BraccioV2 library uses **static memory allocation**. 
-
-All objects (like the `Servo` instances) and arrays (like `_currentJointPositions`) are declared as member variables directly inside the `Braccio` class. When the `Braccio` object is instantiated (typically globally at the top of an Arduino sketch), the memory is allocated statically once at startup. No `new` or `delete` keywords appear anywhere in the source files, guaranteeing zero fragmentation and zero leaks.
-
----
-
-## Practice Exercises
-
-### Exercise 1: Spot the Leak
-Identify the memory leak in the following program. Explain why it occurs and how to fix it.
-```cpp
+```cpp title="heap_basics.cpp"
 #include <iostream>
 
-void calibrateRobot() {
-    int* offset = new int(5);
-    if (*offset > 0) {
-        std::cout << "Positive calibration offset applied." << std::endl;
-        return;
-    }
-    delete offset;
-}
+struct Pose { int base, shoulder, elbow, wrist, wristRot, gripper; };
 
 int main() {
-    calibrateRobot();
+    int n = 5;                                  // imagine this comes from the user at run time
+    Pose* sequence = new Pose[n];               // ask the heap for 5 Poses
+    for (int i = 0; i < n; i++) {
+        sequence[i] = {90 + i * 10, 90, 90, 90, 90, 50};
+    }
+    std::cout << "last base: " << sequence[n - 1].base << '\n';
+    delete[] sequence;                          // give it back (delete[] for arrays)
+    sequence = nullptr;                         // don't leave a dangling pointer
+
+    Pose* single = new Pose{90, 45, 180, 180, 90, 10};
+    std::cout << "park elbow: " << single->elbow << '\n';
+    delete single;                              // plain delete for a single object
     return 0;
 }
 ```
 
-<details>
-<summary><b>View Solution</b></summary>
-The memory leak occurs inside the `if` condition:
-```cpp
-if (*offset > 0) {
-    std::cout << "Positive calibration offset applied." << std::endl;
-    return; // LEAK!
-}
-```
-If `*offset` is greater than `0`, the function execution hits the `return;` statement. The local pointer variable `offset` (which lives on the Stack) is destroyed, but the memory it pointed to on the Heap is **never freed** because `delete offset;` is skipped.
+Every `new` needs **exactly one** matching `delete`:
 
-**The Fix:** Make sure `delete` is called along all execution paths before exiting the function, or avoid heap allocation entirely:
-```cpp
-void calibrateRobot() {
-    int* offset = new int(5);
-    if (*offset > 0) {
-        std::cout << "Positive calibration offset applied." << std::endl;
-        delete offset; // Free memory before returning!
-        return;
-    }
-    delete offset; // Free memory here too
-}
-```
-*Better yet:* Just use a stack variable: `int offset = 5;`. No pointers or dynamic allocations are needed!
-</details>
+| Mistake | Name | Effect |
+|---|---|---|
+| never calling `delete` | **memory leak** | free memory shrinks every time the code runs, until it runs out |
+| using the pointer after `delete` | **use-after-free** | reads/writes memory now used by something else |
+| calling `delete` twice | **double free** | heap corruption |
+| `delete` for an array allocated with `new[]` | mismatched delete | undefined behaviour |
+
+### Why embedded code avoids the heap
+
+On a PC with gigabytes of RAM, the heap is everyday tools. On a 2 KB microcontroller that runs **for weeks**, it's risky:
+
+1. **Fragmentation.** Allocate and free blocks of different sizes and the free space turns into small holes. Eventually
+   a request for 100 bytes fails even though 300 bytes are free in total.
+2. **No safety net.** On AVR, a failed `new` returns `nullptr` (there are no exceptions), and most code never checks.
+3. **Collisions.** The heap grows up toward the stack. Nothing warns you when they meet.
+4. **Unpredictable timing.** Allocation takes a variable amount of time, which is bad for smooth motion control.
+
+!!! bug "The Arduino `String` class uses the heap"
+    ```cpp
+    String cmd = "";
+    cmd += c;            // may reallocate on every character!
+    ```
+    Every time a `String` grows, it may allocate a new, bigger block and free the old one, which is a fast path to
+    fragmentation. In long-running sketches, prefer a fixed `char buffer[32]` (you'll do this in
+    [Project P3](../Projects/project03_serial_control.md)).
+
+### What to do instead: static allocation
+
+| Instead of… | Do this |
+|---|---|
+| `new Pose[n]` with `n` from the user | a global `Pose poses[MAX_POSES]` plus a counter `int poseCount` |
+| `String` concatenation | `char buf[32]` with a length index |
+| creating objects in `loop()` with `new` | create them once, globally or as members |
+
+The memory is reserved at compile time, so it shows up in the IDE's *"Global variables use…"* report. You know **before
+uploading** whether it fits. BraccioV2 follows this rule: all its arrays are fixed-size members, and it never calls `new`.
 
 ---
 
-[Previous: Lesson 13](lesson13_references.md) | [Next: Lesson 15](lesson15_arrays.md)
+## Saving RAM with `F()` and `PROGMEM`
+
+On AVR, string literals are **copied from flash into SRAM** at start-up, so every `Serial.println("long message")` costs
+RAM for the entire run. The `F()` macro keeps the text in flash:
+
+```cpp
+Serial.println("Initialising the Braccio arm, please wait...");      // ~45 bytes of RAM, forever
+Serial.println(F("Initialising the Braccio arm, please wait..."));   // 0 bytes of RAM
+```
+
+For constant tables, such as a long list of poses for a dance, `PROGMEM` does the same:
+
+```cpp
+const int DANCE[][6] PROGMEM = {
+  {90, 90, 90, 90, 90, 50},
+  {45, 70, 110, 60, 90, 10},
+  // ...hundreds more rows, stored in flash
+};
+int angle = pgm_read_word(&DANCE[1][0]);   // read with the special pgm_read_* functions
+```
+
+---
+
+## RAII and smart pointers (on the PC)
+
+In desktop C++, you rarely write `delete` yourself. Objects that clean up in their **destructor** do it for you. This
+idea is called **RAII** (*Resource Acquisition Is Initialisation*):
+
+```cpp title="raii.cpp"
+#include <iostream>
+#include <memory>
+#include <vector>
+
+struct Pose { int base, shoulder, elbow, wrist, wristRot, gripper; };
+
+int main() {
+    // unique_ptr: owns one heap object, deletes it automatically
+    std::unique_ptr<Pose> p = std::make_unique<Pose>(Pose{90, 90, 90, 90, 90, 50});
+    std::cout << "gripper " << p->gripper << '\n';
+
+    // vector: a growable array on the heap, cleaned up automatically
+    std::vector<Pose> recording;
+    recording.push_back({90, 90, 90, 90, 90, 50});
+    recording.push_back({60, 80, 100, 90, 90, 73});
+    std::cout << recording.size() << " poses recorded\n";
+    return 0;
+}   // both freed here, with no delete anywhere
+```
+
+The standard AVR toolchain doesn't ship the C++ standard library (`<memory>`, `<vector>`), so on the UNO we use fixed
+arrays. On bigger boards (ESP32, Arduino Due, Raspberry Pi Pico) these tools are available.
+
+---
+
+## :material-robot-industrial: Arm Lab: watch the RAM
+
+!!! arm "Arm Lab 14"
+    This sketch measures free SRAM at different moments: at start-up, after `arm.begin()`, **inside** a function with a
+    400-byte local array (the stack grows), and after it returns (the stack shrinks back). Every message uses `F()`.
+
+```cpp title="L14_free_ram.ino"
+--8<-- "examples/arm_labs/L14_free_ram/L14_free_ram.ino"
+```
+
+!!! note "How `freeMemory()` works"
+    `__heap_start` and `__brkval` are symbols provided by the AVR C library that mark the start and current end of the
+    heap. The address of a fresh local variable is the current top of the stack. The difference is the free gap between
+    them. It's AVR-specific, hence the `#ifdef __AVR__`.
+
+**Try this:**
+
+1. Remove the `F()` from the long message in `loop()` and verify. How much did *"Global variables use…"* grow?
+2. Change `int samples[200]` to `int samples[800]`. Upload and watch what happens. (Don't worry, nothing is damaged. The
+   board may reset or print garbage.)
+3. Add `String s; for (int i = 0; i < 50; i++) s += "abc";` to `loop()` and watch free RAM over time.
+
+??? success "What you should see"
+    1. It grows by about the length of the message plus 1 (the terminating `'\0'`).
+    2. 1 600 bytes of stack is more than the free space. The stack crashes into the globals, and you'll likely see a
+       reset loop or corrupted output: a *stack overflow* in action.
+    3. Free RAM drops while the `String` exists, and may not fully recover between loops because of fragmentation.
+
+---
+
+## Exercises
+
+**1. Where does it live?** For each, say flash, stack, heap, or global/static SRAM: (a) `Braccio arm;` declared globally,
+(b) `int i` in a `for` loop, (c) the code of `setup()`, (d) `new int[10]`, (e) `static int count` inside a function,
+(f) `F("hello")`, (g) the parameters of a function while it runs.
+
+**2. Budget.** You want to record poses of 6 `int`s each. The globals already use 900 bytes and you want to keep 400 bytes
+free for the stack. What's the maximum number of poses you can store in RAM? Could you store more in EEPROM?
+
+**3. Fix the leak.**
+```cpp
+void logMove(int angle) {
+    char* msg = new char[20];
+    sprintf(msg, "move %d", angle);
+    Serial.println(msg);
+}
+```
+
+??? success "Solution 1"
+    (a) global SRAM (b) stack (c) flash (d) heap (e) global/static SRAM (f) flash (g) stack
+
+??? success "Solution 2"
+    2048 − 900 − 400 = 748 bytes. One pose = 6 × 2 = 12 bytes → **62 poses**. EEPROM has 1024 bytes → 85 poses (minus a
+    few bytes for a header/count), and they survive power-off. That's exactly what Project P4 does.
+
+??? success "Solution 3"
+    It never frees `msg`, so it leaks 20 bytes on **every call**. After about 60 moves, the UNO is out of RAM. Better: no heap at all.
+    ```cpp
+    void logMove(int angle) {
+        char msg[20];                     // stack: freed automatically on return
+        snprintf(msg, sizeof msg, "move %d", angle);
+        Serial.println(msg);
+    }
+    ```
+
+---
+
+## Recap
+
+- Flash holds code, SRAM (2 KB!) holds variables, EEPROM holds settings that survive power-off.
+- The **stack** is automatic and fast but small. Avoid recursion and big local arrays.
+- The **heap** (`new`/`delete`) risks leaks and fragmentation. Embedded code prefers fixed, global allocation.
+- `F()` and `PROGMEM` keep constant data in flash.
+- On the PC, RAII, `unique_ptr` and `vector` manage memory for you.
+
+## Further reading
+
+- [Arduino: Memory guide](https://docs.arduino.cc/learn/programming/memory-guide/)
+- [Adafruit: Memories of an Arduino](https://learn.adafruit.com/memories-of-an-arduino)
+- [LearnCpp: Dynamic memory allocation with new and delete](https://www.learncpp.com/cpp-tutorial/dynamic-memory-allocation-with-new-and-delete/)
+- [Arduino: PROGMEM](https://docs.arduino.cc/language-reference/en/variables/utilities/PROGMEM/)

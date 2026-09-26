@@ -1,85 +1,157 @@
-site_name: BraccioV2 C++ Masterclass — HWIVC Community Edition
-site_description: A community-led C++ tutorial for understanding the BraccioV2 Arduino library and advancing hardware learning in Buea
-site_url: https://TheAfricanJiant.github.io/Practical-C-/
+site_name: Practical C++ with the Braccio Arm
+site_description: Learn C++ from zero by programming a real 6-joint robotic arm — the Tinkerkit Braccio. HWIVC Community Edition.
+site_author: Tambu Precious — Hardware Innovation Valley Community (HWIVC)
+site_url: https://theafricanjiant.github.io/Practical-C-/
 repo_url: https://github.com/TheAfricanJiant/Practical-C-
+repo_name: TheAfricanJiant/Practical-C-
 edit_uri: edit/main/docs/
+copyright: >
+  Community Edition by Tambu Precious &amp; the
+  <a href="https://hwivc.org/">Hardware Innovation Valley Community</a>, Buea.
+  BraccioV2 library &copy; Lukas Severinghaus (LGPL/GPL).
 
 theme:
   name: material
+  language: en
+  logo: images/logo.svg
+  favicon: images/logo.svg
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
   features:
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.indexes
     - navigation.top
+    - navigation.footer
     - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - toc.follow
     - search.highlight
     - search.share
+    - search.suggest
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
   palette:
-    - scheme: default
-      primary: teal
-      accent: amber
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
-    - scheme: slate
-      primary: teal
-      accent: amber
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/TheAfricanJiant/Practical-C-
+    - icon: fontawesome/brands/linkedin
+      link: https://cm.linkedin.com/in/tambu-precious-29bb67217
+    - icon: fontawesome/solid/globe
+      link: https://hwivc.org/
 
 plugins:
   - search
 
 markdown_extensions:
+  - abbr
   - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
-  - toc:
-      permalink: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 nav:
   - Home: index.md
-  - Roadmap: roadmap.md
-  - Introduction: introduction.md
-  - Getting Started: getting_started.md
-  - Part 1 - C++ Basics & Compilation:
-      - "Lesson 01: The C++ Toolchain & Compilation": Part1_Cpp_Basics/lesson01_compiler.md
-      - "Lesson 02: Variables, Types, and Constants": Part1_Cpp_Basics/lesson02_variables.md
-      - "Lesson 03: Control Flow & Decision Making": Part1_Cpp_Basics/lesson03_control_flow.md
-      - "Lesson 04: Functions & Scope": Part1_Cpp_Basics/lesson04_functions.md
-      - "Lesson 05: Header Files vs Source Files": Part1_Cpp_Basics/lesson05_headers.md
-      - "Lesson 06: Include Guards & Pragma Once": Part1_Cpp_Basics/lesson06_include_guards.md
-      - "Lesson 07: Preprocessor Macros": Part1_Cpp_Basics/lesson07_preprocessor.md
-  - Part 2 - Object-Oriented Programming:
-      - "Lesson 08: Classes & Objects": Part2_OOP/lesson08_classes.md
-      - "Lesson 09: Constructors & Member Initializers": Part2_OOP/lesson09_constructors.md
-      - "Lesson 10: Encapsulation & Bounds Checking": Part2_OOP/lesson10_encapsulation.md
-      - "Lesson 11: Member Functions & Const Methods": Part2_OOP/lesson11_methods.md
-  - Part 3 - Pointers, References & Memory:
-      - "Lesson 12: Understanding Pointers & Addresses": Part3_Memory/lesson12_pointers.md
-      - "Lesson 13: References & Pass-by-Reference": Part3_Memory/lesson13_references.md
-      - "Lesson 14: Stack vs Heap & Memory Safety": Part3_Memory/lesson14_dynamic_memory.md
-      - "Lesson 15: C-style Arrays & Joint State": Part3_Memory/lesson15_arrays.md
-  - Part 4 - Building Custom Arduino Libraries:
-      - "Lesson 16: The Arduino Build System & C++": Part4_Arduino_Libraries/lesson16_arduino_ecosystem.md
-      - "Lesson 17: Anatomy of an Arduino Library": Part4_Arduino_Libraries/lesson17_library_structure.md
-      - "Lesson 18: Dissecting the BraccioV2 Library Code": Part4_Arduino_Libraries/lesson18_bracciov2_deep_dive.md
-      - "Lesson 19: Step-by-Step Coding of MyBraccio": Part4_Arduino_Libraries/lesson19_coding_mybraccio.md
-      - "Lesson 20: Deploying, Testing, and Troubleshooting": Part4_Arduino_Libraries/lesson20_deployment.md
+  - Start Here:
+      - Introduction: introduction.md
+      - Course Roadmap: roadmap.md
+      - Setting Up Your Tools: getting_started.md
+      - Meet the Braccio Arm: hardware/meet_the_braccio.md
+      - "Lesson 00: Make the Arm Move": hardware/first_move.md
+  - "Part 1 · C++ Basics":
+      - "01 · How C++ Becomes Motion": Part1_Cpp_Basics/lesson01_compiler.md
+      - "02 · Variables, Types & Constants": Part1_Cpp_Basics/lesson02_variables.md
+      - "03 · Decisions & Loops": Part1_Cpp_Basics/lesson03_control_flow.md
+      - "04 · Functions": Part1_Cpp_Basics/lesson04_functions.md
+      - "05 · Header & Source Files": Part1_Cpp_Basics/lesson05_headers.md
+      - "06 · Include Guards": Part1_Cpp_Basics/lesson06_include_guards.md
+      - "07 · The Preprocessor": Part1_Cpp_Basics/lesson07_preprocessor.md
+  - "Part 2 · Classes":
+      - "08 · Classes & Objects": Part2_OOP/lesson08_classes.md
+      - "09 · Constructors": Part2_OOP/lesson09_constructors.md
+      - "10 · Encapsulation & Safety Limits": Part2_OOP/lesson10_encapsulation.md
+      - "11 · Methods, const & Overloading": Part2_OOP/lesson11_methods.md
+  - "Part 3 · Memory":
+      - "12 · Pointers": Part3_Memory/lesson12_pointers.md
+      - "13 · References": Part3_Memory/lesson13_references.md
+      - "14 · Stack, Heap & 2 KB of RAM": Part3_Memory/lesson14_dynamic_memory.md
+      - "15 · Arrays & Joint State": Part3_Memory/lesson15_arrays.md
+  - "Part 4 · Libraries":
+      - "16 · The Arduino Build System": Part4_Arduino_Libraries/lesson16_arduino_ecosystem.md
+      - "17 · Anatomy of a Library": Part4_Arduino_Libraries/lesson17_library_structure.md
+      - "18 · Inside BraccioV2": Part4_Arduino_Libraries/lesson18_bracciov2_deep_dive.md
+      - "19 · Writing MyBraccio": Part4_Arduino_Libraries/lesson19_coding_mybraccio.md
+      - "20 · Deploy, Test & Debug": Part4_Arduino_Libraries/lesson20_deployment.md
   - Projects:
-      - "Project 01: Creating a Multi-Joint Robot Simulation": Projects/project01_robot.md
-  - Exercises:
-      - "Practice Workbook & Detailed Solutions": Exercises/exercises_solutions.md
-  - Appendix:
-      - "C++ & Arduino Syntax Cheatsheet": Appendix/cheatsheet.md
+      - "P1 · Arm Simulator (PC)": Projects/project01_robot.md
+      - "P2 · Pick & Place": Projects/project02_pick_and_place.md
+      - "P3 · Serial Command Console": Projects/project03_serial_control.md
+      - "P4 · Record & Replay": Projects/project04_record_replay.md
+      - "P5 · Reach a Point (Kinematics)": Projects/project05_kinematics.md
+  - Practice:
+      - Workbook & Solutions: Exercises/exercises_solutions.md
+  - Reference:
+      - BraccioV2 API Reference: Appendix/api_reference.md
+      - C++ & Arduino Cheatsheet: Appendix/cheatsheet.md
+      - Troubleshooting: Appendix/troubleshooting.md
+      - Glossary: Appendix/glossary.md
+      - Resources & Further Learning: Appendix/resources.md

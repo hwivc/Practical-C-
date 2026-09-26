@@ -1,189 +1,387 @@
 # Lesson 08: Classes & Objects
 
-Object-Oriented Programming (OOP) is a programming paradigm that structures software around **objects** rather than functions or procedural logic. In robotics, OOP is a natural fit because a robot is physically made up of discrete, tangible components: motors, sensors, wheels, and grippers.
+<div class="lesson-meta"><span>⏱ 90 min</span><span>🎯 Intermediate</span><span>🧩 Prerequisite: Part 1</span></div>
 
-In C++, we model these physical components as **Classes**, and the individual components on the physical robot become **Objects**.
+!!! abstract "What you'll learn"
+    - The idea behind **object-oriented programming**: bundle data *and* behaviour together
+    - Defining a `class`, creating **objects**, and using the dot operator
+    - Member variables and member functions (**methods**)
+    - Defining methods outside the class with `ClassName::`
+    - `struct` vs `class`, and a first look at `public` / `private`
+    - How BraccioV2 is organised as one big class
 
 ---
 
-## Blueprints vs. Physical Things
+## From loose variables to objects
 
-* **Class (The Blueprint):** A user-defined data type that describes the attributes (data) and behaviors (functions) that all objects of this type will have. It does not occupy memory space until an object is created.
-* **Object (The Instance):** A concrete instance of a class. It represents an actual component and occupies memory.
+Describing one joint with loose variables gets messy fast:
+
+```cpp
+int shoulderAngle = 90;
+int shoulderMin = 15;
+int shoulderMax = 165;
+int shoulderPin = 10;
+// ...and again for base, elbow, wrist, wrist rotation, gripper: 24 variables!
+```
+
+The data belongs together, and so do the actions (move, clamp, print). A **class** is a blueprint that bundles both:
 
 ```mermaid
 classDiagram
-    class ServoMotor {
-        +int pin
+    class Joint {
+        +const char* name
         +int angle
-        +attach(int pin)
-        +write(int angle)
+        +int minAngle
+        +int maxAngle
+        +moveTo(int target)
+        +print()
     }
-    class shoulderObject {
-        pin = 10
-        angle = 90
+```
+
+An **object** is one real thing built from the blueprint. `Joint` is the blueprint; `shoulder` and `elbow` are two
+objects, each with its **own** copy of the data.
+
+<div class="grid cards" markdown>
+
+-   **Class** = blueprint / cookie cutter
+
+    Written once. Describes what every joint *has* and *can do*.
+
+-   **Object** = a thing built from it / a cookie
+
+    `Joint shoulder;` `Joint elbow;`. Each has its own `angle`.
+
+</div>
+
+---
+
+## Your first class
+
+```cpp title="joint_class.cpp"
+#include <iostream>
+
+class Joint {
+public:                                   // (1)!
+    // Member variables: the data every Joint has
+    const char* name = "joint";
+    int angle = 90;
+    int minAngle = 0;
+    int maxAngle = 180;
+
+    // Member function (method): something every Joint can do
+    void moveTo(int target) {
+        if (target < minAngle) target = minAngle;
+        if (target > maxAngle) target = maxAngle;
+        angle = target;                    // (2)!
     }
-    class elbowObject {
-        pin = 9
-        angle = 90
+
+    void print() {
+        std::cout << name << " at " << angle << " deg"
+                  << " [" << minAngle << ".." << maxAngle << "]\n";
     }
-    ServoMotor <|-- shoulderObject : Instantiates
-    ServoMotor <|-- elbowObject : Instantiates
+};                                        // (3)!
+
+int main() {
+    Joint shoulder;                       // (4)!
+    shoulder.name = "shoulder";
+    shoulder.minAngle = 15;
+    shoulder.maxAngle = 165;
+
+    Joint gripper;
+    gripper.name = "gripper";
+    gripper.minAngle = 10;
+    gripper.maxAngle = 73;
+
+    shoulder.moveTo(200);                 // (5)!
+    gripper.moveTo(40);
+
+    shoulder.print();
+    gripper.print();
+    return 0;
+}
+```
+
+1. `public:` means code outside the class may use the members below. More on this in a moment.
+2. Inside a method, `angle` means **this object's** `angle`. When you call `shoulder.moveTo(...)`, it changes the shoulder's angle and no other joint's.
+3. A class definition ends with `};`. Forgetting that semicolon gives very confusing errors.
+4. Creates an object called `shoulder`. Members start with their default values (`angle = 90`, …).
+5. The **dot operator** calls a method on a particular object.
+
+Output:
+
+```text
+shoulder at 165 deg [15..165]
+gripper at 40 deg [10..73]
 ```
 
 ---
 
-## Defining a Class in C++
+## Methods defined outside the class
 
-A class is defined using the `class` keyword. Inside the class, we define members:
-* **Member Variables (Attributes):** The data stored by the object.
-* **Member Functions (Methods):** The actions the object can perform.
+For long methods, and always in libraries, the class lists the method's **declaration**, and the definition is written
+outside using the **scope resolution operator** `::`
 
-### Access Specifiers: `public` vs. `private`
-In C++, access specifiers control who can read or write the class members:
-* `public:` Members are accessible from outside the class (e.g. from the `main()` function).
-* `private:` Members are only accessible from within the class's own member functions. By default, all class members in C++ are private.
-
-Let's define a simple `ServoMotor` class.
-
-```cpp
+```cpp title="outside_definition.cpp"
 #include <iostream>
 
-class ServoMotor {
+class Joint {
 public:
-    // Public member variables (visible to everyone)
-    int pin;
-    int currentAngle;
-
-    // Public member function (behavior)
-    void rotateTo(int targetAngle) {
-        currentAngle = targetAngle;
-        std::cout << "Servo on pin " << pin << " rotated to " << currentAngle << " degrees." << std::endl;
-    }
+    int angle = 90;
+    void nudge(int degrees);   // declaration only
+    void print();
 };
 
+// "the nudge that belongs to Joint"
+void Joint::nudge(int degrees) {
+    angle += degrees;
+}
+
+void Joint::print() {
+    std::cout << "angle = " << angle << '\n';
+}
+
 int main() {
-    // Instantiate two objects of type ServoMotor
-    ServoMotor baseServo;
-    ServoMotor elbowServo;
-
-    // Configure individual object attributes
-    baseServo.pin = 11;
-    baseServo.currentAngle = 90;
-
-    elbowServo.pin = 9;
-    elbowServo.currentAngle = 45;
-
-    // Call member functions on specific objects
-    baseServo.rotateTo(120);
-    elbowServo.rotateTo(90);
-
+    Joint elbow;
+    elbow.nudge(15);
+    elbow.nudge(-5);
+    elbow.print();   // angle = 100
     return 0;
+}
+```
+
+That's exactly the pattern you saw in `BraccioV2.cpp` in Lesson 05:
+
+```cpp
+void Braccio::begin() {          // the begin() that belongs to class Braccio
+  _initializeServos(true);
+}
+```
+
+In a library, the class goes in the **header** (`.h`) and the `Class::method` definitions go in the **source** (`.cpp`).
+
+---
+
+## `this`: the object a method was called on
+
+Inside a method, the keyword `this` is a pointer to the object the method was called on (pointers come in
+[Lesson 12](../Part3_Memory/lesson12_pointers.md)). You rarely need it, but it helps when a parameter has the same name as a member:
+
+```cpp
+void Joint::setAngle(int angle) {
+    this->angle = angle;   // member angle = parameter angle
 }
 ```
 
 ---
 
-## Connection to the BraccioV2 Library
+## `struct` vs `class`
 
-In `BraccioV2.h`, the entire interface is built around the `Braccio` class:
+In C++ they're almost identical. The **only** difference is the default access:
 
-```cpp
+| | members are by default | conventionally used for |
+|---|---|---|
+| `struct` | `public` | plain bundles of data, like `Pose` in Lesson 06 |
+| `class` | `private` | objects with behaviour and rules to protect |
+
+```cpp title="default_access.cpp"
+#include <iostream>
+
+struct PoseS { int base = 90; };   // public by default
+class  PoseC { int base = 90; };   // private by default
+
+int main() {
+    PoseS a;
+    PoseC b;
+    std::cout << a.base << '\n';   // fine
+    std::cout << b.base << '\n';   // compile error: 'base' is private
+    return 0;
+}
+```
+
+`private` members can only be used by the class's own methods. That's how a class **protects its rules**, and it's the
+topic of [Lesson 10](lesson10_encapsulation.md). In this lesson we keep everything `public` so we can experiment.
+
+---
+
+## BraccioV2 is one class
+
+Open `BraccioV2.h`. The whole library is one class:
+
+```cpp title="BraccioV2.h (simplified)"
 class Braccio {
   public:
-    Braccio();
+    Braccio();                                 // constructor (Lesson 09)
     void begin();
-    bool setAllAbsolute(int b, int s, int e, int w, int w_r, int g);
+    bool setOneAbsolute(int joint, int value);
+    void update();
+    void safeDelay(int ms);
     // ...
   private:
-    void _softStart();
-    Servo _base;
-    Servo _shoulder;
+    Servo _base, _shoulder, _elbow, _wrist_rot, _wrist, _gripper;   // six Servo objects!
+    int _jointMax[7];
+    int _currentJointPositions[7];
+    int _targetJointPositions[7];
     // ...
 };
 ```
-* **Public Interface:** Skew developers can call `begin()` or `setAllAbsolute()` in their main `sketch.ino` file because these functions are `public`.
-* **Private Internals:** Developers *cannot* call `_softStart()` or access the internal `Servo _base;` objects directly. Doing so would cause a compilation error. This protects the hardware from accidental or incorrect usage.
+
+And in your sketch, `Braccio arm;` creates **one object** of that class. Every `arm.something()` you've written so far was
+a method call on that object.
+
+Notice that the `Braccio` class *contains* six `Servo` objects. Building bigger objects out of smaller ones is called
+**composition**, and it's how you build a robot in software: an arm *has* joints; a joint *has* a servo.
+
+```mermaid
+classDiagram
+    class Braccio {
+        -Servo _base
+        -Servo _shoulder
+        -Servo ...
+        -int _targetJointPositions[7]
+        +begin()
+        +setOneAbsolute(joint, value) bool
+        +update()
+    }
+    class Servo {
+        +attach(pin)
+        +write(angle)
+    }
+    Braccio *-- "6" Servo : contains
+```
 
 ---
 
-## Practice Exercises
+## :material-robot-industrial: Arm Lab: a `Gripper` class
 
-### Exercise 1: Model a LED Class
-Create a class named `LED` with:
-* A public member variable `int pin`.
-* A public member variable `bool isOn`.
-* A public method `void turnOn()` that sets `isOn` to `true` and prints `LED on pin [pin] is ON`.
-* A public method `void turnOff()` that sets `isOn` to `false` and prints `LED on pin [pin] is OFF`.
+!!! arm "Arm Lab 08"
+    The `Gripper` class remembers whether it's open or closed and counts how many times it has grabbed. `hand.toggle()`
+    decides by itself whether to open or close.
 
-Test it in `main()` by instantiating a status LED on pin 13, turning it on, and then off.
-
-<details>
-<summary><b>View Solution</b></summary>
-
-```cpp
-#include <iostream>
-
-class LED {
-public:
-    int pin;
-    bool isOn;
-
-    void turnOn() {
-        isOn = true;
-        std::cout << "LED on pin " << pin << " is ON" << std::endl;
-    }
-
-    void turnOff() {
-        isOn = false;
-        std::cout << "LED on pin " << pin << " is OFF" << std::endl;
-    }
-};
-
-int main() {
-    LED statusLED;
-    statusLED.pin = 13;
-    statusLED.isOn = false;
-
-    statusLED.turnOn();
-    statusLED.turnOff();
-
-    return 0;
-}
-```
-</details>
-
-### Exercise 2: Predict the Access Error
-Why will the following code fail to compile? What is the access specifier of `maxAngle` by default?
-```cpp
-#include <iostream>
-
-class SafetyJoint {
-    int maxAngle = 180; // No access specifier listed
-};
-
-int main() {
-    SafetyJoint joint;
-    std::cout << joint.maxAngle << std::endl;
-    return 0;
-}
+```cpp title="L08_gripper_class.ino"
+--8<-- "examples/arm_labs/L08_gripper_class/L08_gripper_class.ino"
 ```
 
-<details>
-<summary><b>View Solution</b></summary>
-The code fails to compile with an error stating that `maxAngle` is private.
+**Try this:**
 
-In C++, any members declared inside a `class` before an access specifier is listed are **`private`** by default. Because `maxAngle` is private, the function `main()` (which is outside the class) is not allowed to read it directly.
-
-**To fix this, add the `public:` specifier:**
-```cpp
-class SafetyJoint {
-public:
-    int maxAngle = 180;
-};
-```
-</details>
+1. Add a method `void grabFor(unsigned long ms)` that closes, waits `ms` milliseconds, then opens.
+2. Add a member `int softAngle = 45;` and a method `holdSoft()` for fragile objects.
+3. Create a **second** `Gripper` object called `test`, and change its `closedAngle` without touching `hand`. Print both.
+   (It won't drive a second gripper, since there's only one, but each object keeps its own data.)
 
 ---
 
-[Previous: Lesson 07](../Part1_Cpp_Basics/lesson07_preprocessor.md) | [Next: Lesson 09](lesson09_constructors.md)
+## Common mistakes
+
+| Mistake | Symptom |
+|---|---|
+| Missing `;` after the class's closing `}` | Errors on the *next* line, such as `expected ';' after class definition` |
+| Calling a method without an object: `open();` | `'open' was not declared in this scope` |
+| Using `Joint.moveTo(90)` (the class name) | `expected unqualified-id`. Call methods on an **object**: `shoulder.moveTo(90)` |
+| Forgetting `Joint::` when defining outside | The compiler thinks it's a free function and can't see the members |
+| Accessing a `private` member from outside | `'x' is private within this context` |
+
+---
+
+## Exercises
+
+**1. `LedIndicator`.** Write a class with a `bool on` member and methods `turnOn()`, `turnOff()`, `toggle()` and `print()`.
+
+**2. `Pose` with methods.** Turn Lesson 06's `struct Pose` into a struct with a method `int totalTravel(Pose other)` that
+returns the sum of the absolute differences of all six joint angles between two poses.
+
+**3. Two joints.** Using the `Joint` class above, create `base` and `elbow`, move them to 30 and 150, then write a free
+function `int widestSpread(Joint a, Joint b)` that returns the difference between their angles.
+
+??? success "Solution 1"
+    ```cpp
+    #include <iostream>
+
+    class LedIndicator {
+    public:
+        bool on = false;
+        void turnOn()  { on = true; }
+        void turnOff() { on = false; }
+        void toggle()  { on = !on; }
+        void print()   { std::cout << (on ? "ON" : "OFF") << '\n'; }
+    };
+
+    int main() {
+        LedIndicator status;
+        status.toggle();
+        status.print();   // ON
+        status.toggle();
+        status.print();   // OFF
+        return 0;
+    }
+    ```
+
+??? success "Solution 2"
+    ```cpp
+    #include <iostream>
+
+    struct Pose {
+        int base, shoulder, elbow, wrist, wristRot, gripper;
+
+        int totalTravel(Pose other) {
+            return diff(base, other.base) + diff(shoulder, other.shoulder) + diff(elbow, other.elbow)
+                 + diff(wrist, other.wrist) + diff(wristRot, other.wristRot) + diff(gripper, other.gripper);
+        }
+
+        static int diff(int a, int b) { return a > b ? a - b : b - a; }   // helper; 'static' explained in Lesson 11
+    };
+
+    int main() {
+        Pose home = {90, 90, 90, 90, 90, 50};
+        Pose park = {90, 45, 180, 180, 90, 10};
+        std::cout << "home -> park travel: " << home.totalTravel(park) << " deg\n";   // 0+45+90+90+0+40 = 265
+        return 0;
+    }
+    ```
+
+??? success "Solution 3"
+    ```cpp
+    #include <iostream>
+
+    class Joint {
+    public:
+        const char* name = "joint";
+        int angle = 90;
+        int minAngle = 0;
+        int maxAngle = 180;
+        void moveTo(int target) {
+            if (target < minAngle) target = minAngle;
+            if (target > maxAngle) target = maxAngle;
+            angle = target;
+        }
+    };
+
+    int widestSpread(Joint a, Joint b) {
+        return a.angle > b.angle ? a.angle - b.angle : b.angle - a.angle;
+    }
+
+    int main() {
+        Joint base, elbow;
+        base.moveTo(30);
+        elbow.moveTo(150);
+        std::cout << "spread = " << widestSpread(base, elbow) << '\n';   // 120
+        return 0;
+    }
+    ```
+    `a` and `b` are **copies** of the objects (pass-by-value). That's fine here, but in
+    [Lesson 13](../Part3_Memory/lesson13_references.md) you'll learn to pass objects by `const&` instead.
+
+---
+
+## Recap
+
+- A **class** bundles data (member variables) and behaviour (methods). An **object** is one instance of it.
+- Use the dot operator: `object.member`, `object.method()`.
+- Define long methods outside the class with `ClassName::method`, class in the `.h`, definitions in the `.cpp`.
+- `struct` defaults to `public`, `class` to `private`.
+- BraccioV2 is a single class that *contains* six `Servo` objects (composition).
+
+## Further reading
+
+- [LearnCpp: Introduction to object-oriented programming](https://www.learncpp.com/cpp-tutorial/introduction-to-object-oriented-programming/)
+- [LearnCpp: Classes and class members](https://www.learncpp.com/cpp-tutorial/introduction-to-classes/)
+- [Arduino: Writing a library (the Morse example)](https://docs.arduino.cc/learn/contributions/arduino-creating-library-guide/)

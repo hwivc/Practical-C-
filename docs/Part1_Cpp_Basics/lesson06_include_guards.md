@@ -1,154 +1,286 @@
-# Lesson 06: Include Guards & Pragma Once
+# Lesson 06: Include Guards
 
-When compiling a C++ project, the preprocessor resolves `#include` directives by literally copying and pasting the header's contents into the source file. If a header file is included more than once in a single compilation unit, the compiler sees multiple declarations of the same classes or structs, resulting in compile-time redefinition errors.
+<div class="lesson-meta"><span>⏱ 45 min</span><span>🎯 Intermediate</span><span>🧩 Prerequisite: Lesson 05</span></div>
 
-To solve this, we use **Include Guards** or `#pragma once`.
+!!! abstract "What you'll learn"
+    - Why including the same header twice breaks the build
+    - The classic `#ifndef` / `#define` / `#endif` **include guard**
+    - `#pragma once`, the modern shortcut
+    - A first look at `struct`, a type that groups values (a whole arm **pose**!)
+    - How BraccioV2 guards its own header
 
 ---
 
-## The Double Inclusion Problem
+## The problem: double inclusion
 
-Imagine we have a project that models a robot:
-1. `config.h` declares a structure for servo limits:
-   ```cpp
-   struct JointConfig {
-       int minAngle;
-       int maxAngle;
-   };
-   ```
-2. `servo.h` includes `config.h` to configure its motors.
-3. `main.cpp` includes both `config.h` (to read bounds) and `servo.h` (to interact with the motors).
+`#include` is plain copy-and-paste. When header A includes header B, and your sketch includes **both**, B's text
+gets pasted **twice**:
 
-When the preprocessor compiles `main.cpp`, it expands the files:
-* It reads `config.h` -> defines `JointConfig`.
-* It reads `servo.h` -> which reads `config.h` -> defines `JointConfig` *again*.
-
-The compiler sees:
-```cpp
-struct JointConfig { ... };
-struct JointConfig { ... }; // ERROR: redefinition of 'struct JointConfig'
+```mermaid
+flowchart TD
+    S[sketch.ino] -->|#include| P[pose.h<br/>defines struct Pose]
+    S -->|#include| M[moves.h]
+    M -->|#include| P2[pose.h<br/>AGAIN]
+    style P2 fill:#fee2e2,stroke:#dc2626
 ```
-Even though you didn't write it twice, the preprocessor expanded it twice. This breaks compilation.
+
+Declaring a function twice is harmless, but **defining** a type twice is an error. Let's see it happen. First, meet the
+`struct`: a custom type that bundles several values under one name.
+
+```cpp title="double_include.cpp (broken on purpose)"
+// FILE: pose.h
+struct Pose {                 // no include guard!
+    int base, shoulder, elbow, wrist, wristRot, gripper;
+};
+// FILE: moves.h
+#include "pose.h"
+void printPose(Pose p);
+// FILE: main.cpp
+// compile error expected: pose.h ends up pasted twice
+#include <iostream>
+#include "pose.h"
+#include "moves.h"            // pastes pose.h a second time
+
+int main() {
+    Pose home = {90, 90, 90, 90, 90, 50};
+    std::cout << home.base << '\n';
+    return 0;
+}
+```
+
+```text
+In file included from moves.h:1,
+                 from main.cpp:4:
+pose.h:1:8: error: redefinition of 'struct Pose'
+pose.h:1:8: note: previous definition of 'struct Pose'
+```
+
+In a small program you could just delete one `#include`. In a project with dozens of headers that include each other,
+you can't keep track. The header itself must protect against being pasted twice.
 
 ---
 
-## Solution 1: Traditional Include Guards
+## The fix: an include guard
 
-Traditional include guards use preprocessor directives (`#ifndef`, `#define`, and `#endif`) to wrap the contents of a header file. 
+```cpp title="pose.h"
+#ifndef POSE_H        // 1. "if POSE_H is NOT yet defined..."
+#define POSE_H        // 2. "...define it now, and keep going"
 
-```cpp
-#ifndef CONFIG_H_
-#define CONFIG_H_
-
-struct JointConfig {
-    int minAngle;
-    int maxAngle;
+struct Pose {
+    int base, shoulder, elbow, wrist, wristRot, gripper;
 };
 
-#endif // CONFIG_H_
+#endif                // 3. end of the protected region
 ```
 
-Here is how this prevents double inclusion:
-1. The first time `config.h` is read, the preprocessor evaluates `#ifndef CONFIG_H_` ("if `CONFIG_H_` is not defined").
-2. Since `CONFIG_H_` has not been defined, the preprocessor proceeds past the condition.
-3. The next line is `#define CONFIG_H_`, which defines the preprocessor macro.
-4. The struct definition is parsed.
-5. The second time `config.h` is read (via `servo.h`), the preprocessor checks `#ifndef CONFIG_H_`.
-6. Since `CONFIG_H_` is now defined, the preprocessor skips everything down to the `#endif`. The struct is not redefined!
+- **First time** the preprocessor sees it: `POSE_H` isn't defined, so it defines it and keeps the contents.
+- **Second time**: `POSE_H` is already defined, so everything up to `#endif` is **skipped**.
 
-> [!TIP]
-> The naming convention for include guard macros is typically the header name in uppercase, replacing dots with underscores and adding a trailing underscore (e.g. `FILENAME_H_` or `PROJECT_FILENAME_H`).
+```mermaid
+flowchart LR
+    A[#include pose.h] --> B{POSE_H<br/>defined?}
+    B -- no, 1st time --> C[#define POSE_H<br/>keep struct Pose]
+    B -- yes, 2nd time --> D[skip to #endif]
+```
+
+The same program, now guarded, compiles fine:
+
+```cpp title="guarded.cpp"
+// FILE: pose.h
+#ifndef POSE_H
+#define POSE_H
+struct Pose {
+    int base, shoulder, elbow, wrist, wristRot, gripper;
+};
+#endif
+// FILE: moves.h
+#ifndef MOVES_H
+#define MOVES_H
+#include "pose.h"
+int totalAngle(Pose p);
+#endif
+// FILE: moves.cpp
+#include "moves.h"
+int totalAngle(Pose p) {
+    return p.base + p.shoulder + p.elbow + p.wrist + p.wristRot + p.gripper;
+}
+// FILE: main.cpp
+#include <iostream>
+#include "pose.h"
+#include "moves.h"
+
+int main() {
+    Pose home = {90, 90, 90, 90, 90, 50};
+    std::cout << "base " << home.base << ", sum " << totalAngle(home) << '\n';
+    return 0;
+}
+```
+
+### Naming the guard
+
+The macro name must be **unique** in the whole project. Two headers using the same guard name would silently hide each
+other. Convention: the file name in capitals, with `.` replaced by `_`, often with the project name in front:
+
+| File | Guard |
+|---|---|
+| `pose.h` | `POSE_H` |
+| `MyBraccio.h` | `MYBRACCIO_H` or `MY_BRACCIO_H_` |
+| `BraccioV2.h` | `BRACCIOV2_H_` (that's what the real library uses) |
+
+!!! warning "Names to avoid"
+    Don't start guard names with an underscore followed by a capital letter (`_POSE_H`), or use double underscores
+    (`__POSE_H`). Those names are reserved for the compiler and standard library.
 
 ---
 
-## Solution 2: `#pragma once`
+## `#pragma once`
 
-Most modern C++ compilers support a simpler, non-standard but universally accepted alternative: `#pragma once`.
+Almost every compiler (GCC, Clang, MSVC, and the Arduino toolchain) also accepts a one-line version:
 
 ```cpp
 #pragma once
 
-struct JointConfig {
-    int minAngle;
-    int maxAngle;
-};
+struct Pose { /* ... */ };
 ```
 
-When the compiler encounters `#pragma once`, it marks this file. If it encounters the same file again during the compilation of a source file, it ignores it immediately.
+| | `#ifndef` guard | `#pragma once` |
+|---|---|---|
+| Part of the C++ standard | ✅ | ❌ (but universally supported) |
+| Can't clash with another header's name | ❌ (you choose the name) | ✅ |
+| Less typing | ❌ | ✅ |
+| Used by Arduino libraries | most common | also common |
 
-### Pros of `#pragma once`:
-* **Concise:** Only requires one line at the top.
-* **No Name Collisions:** You do not have to worry about accidentally using the same include guard macro name in two different header files.
-* **Faster Compile Times:** The compiler does not even open the file a second time to parse preprocessor checks.
-
-### Cons of `#pragma once`:
-* **Non-Standard:** It is not part of the official C++ Standard (though supported by all major compilers like GCC, Clang, and MSVC).
-* **Path Issues:** In very complex builds with symbolic links or network drives, the compiler might fail to recognize that two paths refer to the same physical file.
+Either is fine. This course uses classic guards because you'll meet them in almost every Arduino library, including
+BraccioV2. **What matters is that every header has one.**
 
 ---
 
-## Connection to the BraccioV2 Library
+## How BraccioV2 does it
 
-In `BraccioV2.h`, traditional include guards are used:
-```cpp
+```cpp title="BraccioV2.h (excerpt)"
 #ifndef BRACCIOV2_H_
 #define BRACCIOV2_H_
 
-// All class declarations, constants, and defines go here...
-
-#endif
-```
-This ensures that if you include `<BraccioV2.h>` in your Arduino sketch, and also include another library that happens to include `<BraccioV2.h>`, your project will compile without errors.
-
----
-
-## Practice Exercises
-
-### Exercise 1: Implement Include Guards
-Add proper, traditional include guards to this vulnerable header file:
-```cpp
-// motor_limits.h
-const int HARD_LIMIT_MAX = 180;
-const int HARD_LIMIT_MIN = 0;
-```
-
-<details>
-<summary><b>View Solution</b></summary>
-
-```cpp
-#ifndef MOTOR_LIMITS_H_
-#define MOTOR_LIMITS_H_
-
-const int HARD_LIMIT_MAX = 180;
-const int HARD_LIMIT_MIN = 0;
-
-#endif // MOTOR_LIMITS_H_
-```
-</details>
-
-### Exercise 2: Identify the Guard Failure
-Look at this header file. Why will it fail to prevent redefinition errors when included multiple times?
-```cpp
-#ifndef LED_PINS_H
-#define LED_PIN_H
-
-const int STATUS_LED = 13;
+#include <Arduino.h>
+#include <Servo.h>
+...
+class Braccio {
+  ...
+};
 
 #endif
 ```
 
-<details>
-<summary><b>View Solution</b></summary>
-The name used in the `#ifndef` check is `LED_PINS_H` (with an **S**), but the name defined in the next line is `LED_PIN_H` (without an **S**).
-
-When the preprocessor reads this file a second time:
-1. It checks `#ifndef LED_PINS_H`.
-2. Since `LED_PINS_H` was never defined (only `LED_PIN_H` was), the condition remains true.
-3. The preprocessor parses the content again, causing a redefinition compiler error.
-
-Include guard macro names must match exactly across `#ifndef` and `#define`.
-</details>
+`Arduino.h` and `Servo.h` have their own guards too. So when your sketch includes `Servo.h` *and* `BraccioV2.h`, the
+`Servo` class is still defined only once.
 
 ---
 
-[Previous: Lesson 05](lesson05_headers.md) | [Next: Lesson 07](lesson07_preprocessor.md)
+## A quick look at `struct`
+
+`struct` lets you make your own type from several variables called **members**. You access members with a dot:
+
+```cpp title="struct_demo.cpp"
+#include <iostream>
+
+struct Pose {
+    int base;
+    int shoulder;
+    int elbow;
+    int wrist;
+    int wristRot;
+    int gripper;
+};
+
+int main() {
+    Pose park = {90, 45, 180, 180, 90, 10};   // initialise in order
+    park.gripper = 30;                        // change one member
+    Pose copy = park;                         // copies ALL members
+
+    std::cout << "park gripper " << park.gripper << ", copy elbow " << copy.elbow << '\n';
+    std::cout << "a Pose uses " << sizeof(Pose) << " bytes\n";   // 6 ints
+    return 0;
+}
+```
+
+A `Pose` is much easier to pass around than six separate numbers. In [Lesson 08](../Part2_OOP/lesson08_classes.md) you'll see
+that a `struct` is almost the same thing as a `class`.
+
+---
+
+## :material-robot-industrial: Arm Lab: poses in a guarded header
+
+!!! arm "Arm Lab 06"
+    `pose.h` is included twice: once directly and once through `moves.h`. Thanks to the guards, it builds.
+    Then **delete the three guard lines from `pose.h`** and click Verify to see the `redefinition` error for yourself.
+
+=== "L06_guards.ino"
+
+    ```cpp
+    --8<-- "examples/arm_labs/L06_guards/L06_guards.ino"
+    ```
+
+=== "pose.h"
+
+    ```cpp
+    --8<-- "examples/arm_labs/L06_guards/pose.h"
+    ```
+
+=== "moves.h"
+
+    ```cpp
+    --8<-- "examples/arm_labs/L06_guards/moves.h"
+    ```
+
+=== "moves.cpp"
+
+    ```cpp
+    --8<-- "examples/arm_labs/L06_guards/moves.cpp"
+    ```
+
+---
+
+## Exercises
+
+**1. Guard it.** Add include guards to the `joint_math.h` and `arm_utils.h` headers from Lesson 05 (if you haven't already),
+using the naming convention above.
+
+**2. Spot the bug.** Two teammates wrote `servo_utils.h` and `sensor_utils.h`, and both used the guard `UTILS_H`.
+What happens when a sketch includes both?
+
+**3. New pose.** Add a `const Pose WAVE_UP` and `WAVE_DOWN` to `pose.h` and make the arm wave in `loop()` using
+`moveToPose`.
+
+??? success "Solution 2"
+    The first header defines `UTILS_H`. When the second header is included, its guard sees that `UTILS_H` is already
+    defined and **skips its entire contents**. You then get confusing errors like `'readSensor' was not declared`,
+    even though the header is clearly included. This is why guard names should include the file name (and ideally
+    the project name), or why you might prefer `#pragma once`.
+
+??? success "Solution 3"
+    ```cpp
+    // pose.h (inside the guard)
+    const Pose WAVE_UP   = {90, 90, 90, 120, 90, 50};
+    const Pose WAVE_DOWN = {90, 90, 90, 60,  90, 50};
+
+    // sketch
+    void loop() {
+      moveToPose(WAVE_UP, 600);
+      moveToPose(WAVE_DOWN, 600);
+    }
+    ```
+
+---
+
+## Recap
+
+- `#include` is copy-paste, so headers can end up pasted twice. Defining a type twice is an error.
+- Wrap **every** header in `#ifndef NAME_H` / `#define NAME_H` / `#endif`, or use `#pragma once`.
+- Guard names must be unique. Base them on the file name.
+- `struct` groups related values. A `Pose` holds all six joint angles.
+
+## Further reading
+
+- [LearnCpp: Header guards](https://www.learncpp.com/cpp-tutorial/header-guards/)
+- [cppreference: `#pragma once`](https://en.cppreference.com/w/cpp/preprocessor/impl)
+- [LearnCpp: Structs](https://www.learncpp.com/cpp-tutorial/introduction-to-structs-members-and-member-selection/)

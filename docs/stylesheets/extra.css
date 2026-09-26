@@ -1,0 +1,191 @@
+/* ------------------------------------------------------------------
+   Practical C++ with the Braccio Arm — site theme
+   Braccio orange + deep slate, tuned for light and dark mode.
+   ------------------------------------------------------------------ */
+
+:root {
+  --md-primary-fg-color: #d9541a;
+  --md-primary-fg-color--light: #f07a3c;
+  --md-primary-fg-color--dark: #a83d0f;
+  --md-primary-bg-color: #ffffff;
+  --md-accent-fg-color: #0f766e;
+  --md-accent-fg-color--transparent: rgba(15, 118, 110, 0.1);
+
+  --arm-orange: #e8601c;
+  --arm-teal: #0f766e;
+  --arm-slate: #1f2937;
+  --arm-card-bg: #fff7f2;
+  --arm-card-border: #f6d3c0;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #e8601c;
+  --md-primary-fg-color--light: #f5874d;
+  --md-primary-fg-color--dark: #b8470f;
+  --md-accent-fg-color: #2dd4bf;
+  --md-accent-fg-color--transparent: rgba(45, 212, 191, 0.1);
+  --md-default-bg-color: #14161c;
+  --md-code-bg-color: #1c1f27;
+  --arm-card-bg: #1d1a19;
+  --arm-card-border: #4a2c1d;
+}
+
+/* ---------- Typography ---------- */
+.md-typeset h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+}
+.md-typeset h2 {
+  font-weight: 700;
+  border-bottom: 2px solid var(--arm-card-border);
+  padding-bottom: 0.25em;
+  margin-top: 2em;
+}
+.md-typeset h3 { font-weight: 650; }
+
+/* ---------- Images & diagrams ---------- */
+.md-typeset img.diagram,
+.md-typeset figure img {
+  border-radius: 12px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+}
+[data-md-color-scheme="slate"] .md-typeset img.diagram,
+[data-md-color-scheme="slate"] .md-typeset figure img {
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+}
+.md-typeset figure { margin: 1.6em auto; }
+.md-typeset figcaption {
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+  max-width: 44rem;
+  margin-top: 0.6em;
+}
+
+/* ---------- Home page hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.5rem 0 1rem;
+}
+.hero h1 {
+  font-size: 2.4rem;
+  line-height: 1.12;
+  margin: 0 0 0.6rem;
+}
+.hero h1 .accent { color: var(--arm-orange); }
+.hero p.lead {
+  font-size: 1.02rem;
+  color: var(--md-default-fg-color--light);
+  margin: 0 0 1.2rem;
+}
+.hero img {
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(232, 96, 28, 0.18);
+}
+.hero .md-button { margin: 0 0.4rem 0.5rem 0; }
+@media screen and (max-width: 60em) {
+  .hero { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.9rem; }
+}
+
+/* Stat strip */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  margin: 1.2rem 0 0.5rem;
+}
+.stats div {
+  background: var(--arm-card-bg);
+  border: 1px solid var(--arm-card-border);
+  border-radius: 12px;
+  padding: 0.8rem 0.6rem;
+  text-align: center;
+}
+.stats b {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--arm-orange);
+  line-height: 1.2;
+}
+.stats span { font-size: 0.7rem; color: var(--md-default-fg-color--light); }
+@media screen and (max-width: 45em) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- Cards ---------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 14px;
+  border: 1px solid var(--arm-card-border);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+  transform: translateY(-2px);
+  border-color: var(--arm-orange);
+  box-shadow: 0 6px 24px rgba(232, 96, 28, 0.15);
+}
+
+/* ---------- Lesson metadata chips ---------- */
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: -0.4rem 0 1.4rem;
+}
+.lesson-meta span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--arm-card-bg);
+  border: 1px solid var(--arm-card-border);
+  color: var(--md-default-fg-color);
+}
+
+/* ---------- Custom admonition: "arm" (Arm Lab) ---------- */
+:root {
+  --md-admonition-icon--arm: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5z"/></svg>');
+}
+.md-typeset .admonition.arm,
+.md-typeset details.arm {
+  border-color: var(--arm-orange);
+}
+.md-typeset .arm > .admonition-title,
+.md-typeset .arm > summary {
+  background-color: rgba(232, 96, 28, 0.1);
+}
+.md-typeset .arm > .admonition-title::before,
+.md-typeset .arm > summary::before {
+  background-color: var(--arm-orange);
+  -webkit-mask-image: var(--md-admonition-icon--arm);
+  mask-image: var(--md-admonition-icon--arm);
+}
+
+/* ---------- Tables ---------- */
+.md-typeset table:not([class]) {
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.72rem;
+}
+.md-typeset table:not([class]) th {
+  background: var(--arm-card-bg);
+  color: var(--md-default-fg-color);
+}
+
+/* ---------- Code ---------- */
+.md-typeset code { border-radius: 5px; }
+.md-typeset pre > code { border-radius: 10px; }
+
+/* ---------- Footer nav ---------- */
+.md-footer__inner { padding-top: 0.6rem; }
+
+/* Two cards per row on wide screens (avoids a lone orphan card with 4 items) */
+.md-typeset .grid.cards > ul {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}

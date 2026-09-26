@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" width="980" height="420" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="Pointers &amp; references: boxes and addresses">
+<title>Pointers &amp; references: boxes and addresses</title>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+  <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8601c"/></marker>
+  <marker id="arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker>
+  <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f27a3a"/><stop offset="1" stop-color="#d4501a"/></linearGradient>
+  <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b8a95"/><stop offset="1" stop-color="#0d6d77"/></linearGradient>
+</defs>
+<rect x="1" y="1" width="978" height="418" rx="18" fill="#ffffff" stroke="#eadcd2" stroke-width="2"/>
+<text x="32" y="46" font-size="22" font-weight="800" fill="#1f2937">Pointers &amp; references: boxes and addresses</text>
+<text x="32" y="72" font-size="14" fill="#64748b">RAM is a long row of numbered boxes (addresses shown as on an AVR)</text>
+<text x="106" y="142" font-size="13" fill="#64748b" font-weight="600" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F0</text>
+<rect x="120" y="110" width="170" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="205" y="140" font-size="16" fill="#1f2937" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">…</text>
+<text x="106" y="198" font-size="13" fill="#64748b" font-weight="600" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F2</text>
+<rect x="120" y="166" width="170" height="48" rx="6" fill="#fff7f2" stroke="#e8601c" stroke-width="2"/>
+<text x="205" y="196" font-size="16" fill="#1f2937" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">90</text>
+<text x="306" y="196" font-size="14" fill="#b8470f" font-weight="700" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">angle</text>
+<text x="106" y="254" font-size="13" fill="#64748b" font-weight="600" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F4</text>
+<rect x="120" y="222" width="170" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="205" y="252" font-size="16" fill="#1f2937" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">165</text>
+<text x="306" y="252" font-size="14" fill="#1f2937" font-weight="700" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">maxAngle</text>
+<text x="106" y="310" font-size="13" fill="#64748b" font-weight="600" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F6</text>
+<rect x="120" y="278" width="170" height="48" rx="6" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>
+<text x="205" y="308" font-size="16" fill="#1f2937" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F2</text>
+<text x="306" y="308" font-size="14" fill="#0f766e" font-weight="700" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">ptr</text>
+<text x="106" y="366" font-size="13" fill="#64748b" font-weight="600" text-anchor="end" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">0x08F8</text>
+<rect x="120" y="334" width="170" height="48" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="205" y="364" font-size="16" fill="#1f2937" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">…</text>
+<path d="M290,300 C440,300 440,190 296,190" stroke="#0f766e" stroke-width="3" fill="none" marker-end="url(#arrT)" />
+<text x="410" y="262" font-size="12" fill="#0f766e" font-weight="700" text-anchor="start">ptr holds the</text>
+<text x="410" y="278" font-size="12" fill="#0f766e" font-weight="700" text-anchor="start">ADDRESS of angle</text>
+<rect x="540" y="100" width="410" height="280" rx="14" fill="#0f172a" stroke="#0f172a" stroke-width="2"/>
+<text x="566" y="136" font-size="15" fill="#e2e8f0" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">int  angle    = 90;</text>
+<text x="566" y="160" font-size="15" fill="#e2e8f0" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">int  maxAngle = 165;</text>
+<text x="566" y="184" font-size="15" fill="#5eead4" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">int* ptr = &amp;angle;</text>
+<text x="566" y="232" font-size="15" fill="#fdba74" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">*ptr = 120;</text>
+<text x="566" y="256" font-size="15" fill="#64748b" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">// angle is now 120</text>
+<text x="566" y="304" font-size="15" fill="#c4b5fd" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">int&amp; alias = angle;</text>
+<text x="566" y="328" font-size="15" fill="#c4b5fd" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">alias = 45;</text>
+<text x="566" y="352" font-size="15" fill="#64748b" font-weight="600" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">// angle is now 45</text>
+<text x="32" y="402" font-size="13" fill="#64748b" font-weight="normal" text-anchor="start">&amp;angle = "address of angle"   ·   *ptr = "the value at that address"   ·   int&amp; = another name for the same box</text>
+</svg>

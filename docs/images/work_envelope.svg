@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 430" width="980" height="430" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="Where the arm can reach (top view)">
+<title>Where the arm can reach (top view)</title>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+  <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8601c"/></marker>
+  <marker id="arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker>
+  <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f27a3a"/><stop offset="1" stop-color="#d4501a"/></linearGradient>
+  <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b8a95"/><stop offset="1" stop-color="#0d6d77"/></linearGradient>
+</defs>
+<rect x="1" y="1" width="978" height="428" rx="18" fill="#ffffff" stroke="#eadcd2" stroke-width="2"/>
+<text x="32" y="46" font-size="22" font-weight="800" fill="#1f2937">Where the arm can reach (top view)</text>
+<text x="32" y="72" font-size="14" fill="#64748b">Plan your pick-and-place layout inside the pick zone</text>
+<path d="M80,380 A250,250 0 0 1 580,380 Z" fill="#fde3d3" stroke="#f6d3c0" stroke-width="1.5"/>
+<path d="M180,380 A150,150 0 0 1 480,380 Z" fill="#fbd0b5" stroke="#f6d3c0" stroke-width="1.5"/>
+<path d="M270,380 A60,60 0 0 1 390,380 Z" fill="#ffffff" stroke="#f6d3c0" stroke-width="1.5"/>
+<text x="330" y="154" font-size="12.5" fill="#b8470f" font-weight="700" text-anchor="middle">max reach ≈ 40 cm (about 80 cm side to side)</text>
+<text x="330" y="220" font-size="12.5" fill="#b8470f" font-weight="700" text-anchor="middle">comfortable pick zone</text>
+<circle cx="330" cy="380" r="42" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2"/>
+<line x1="376.0" y1="380.0" x2="585.75" y2="380.00000000000006" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="605.0" y="384.0" font-size="12" fill="#64748b" font-weight="700" text-anchor="middle">base 0°</text>
+<line x1="362.52691193458116" y1="347.47308806541884" x2="510.84255928845954" y2="199.15744071154046" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="524.4543648263005" y="189.54563517369942" font-size="12" fill="#64748b" font-weight="700" text-anchor="middle">base 45°</text>
+<line x1="330.0" y1="334.0" x2="330.00000000000006" y2="124.25" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="330.0" y="109.0" font-size="12" fill="#64748b" font-weight="700" text-anchor="middle">base 90°</text>
+<line x1="297.47308806541884" y1="347.47308806541884" x2="149.1574407115405" y2="199.15744071154046" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="135.54563517369945" y="189.54563517369942" font-size="12" fill="#64748b" font-weight="700" text-anchor="middle">base 135°</text>
+<line x1="284.0" y1="380.0" x2="74.25" y2="380.0" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 4"/>
+<text x="55.0" y="383.99999999999994" font-size="12" fill="#64748b" font-weight="700" text-anchor="middle">base 180°</text>
+<rect x="650" y="110" width="300" height="250" rx="12" fill="#fcfcfd" stroke="#ece3dc" stroke-width="1.5"/>
+<text x="668" y="140" font-size="13.5" fill="#b8470f" font-weight="800" text-anchor="start">Clear the circle</text>
+<text x="668" y="161" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start">Nothing within 45 cm of the base</text>
+<text x="668" y="182" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start">while the arm powers up.</text>
+<text x="668" y="203" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start"></text>
+<text x="668" y="224" font-size="13.5" fill="#b8470f" font-weight="800" text-anchor="start">Heavy = close</text>
+<text x="668" y="245" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start">150 g max at 32 cm; 400 g folded.</text>
+<text x="668" y="266" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start"></text>
+<text x="668" y="287" font-size="13.5" fill="#b8470f" font-weight="800" text-anchor="start">Fixed base</text>
+<text x="668" y="308" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start">Screw or clamp the base plate —</text>
+<text x="668" y="329" font-size="13.5" fill="#1f2937" font-weight="normal" text-anchor="start">fast moves can tip the arm over.</text>
+</svg>

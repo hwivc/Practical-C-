@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "author": "Practical C++ with the Braccio Arm",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 200, "left": 0, "attrs": {} },
+    { "type": "wokwi-servo", "id": "m1_base",      "top": -40, "left": -260, "attrs": { "hornColor": "#e8601c" } },
+    { "type": "wokwi-servo", "id": "m2_shoulder",  "top": 40,  "left": -260, "attrs": { "hornColor": "#e8601c" } },
+    { "type": "wokwi-servo", "id": "m3_elbow",     "top": 120, "left": -260, "attrs": { "hornColor": "#e8601c" } },
+    { "type": "wokwi-servo", "id": "m4_wrist",     "top": -40, "left": 380,  "attrs": { "hornColor": "#e8601c" } },
+    { "type": "wokwi-servo", "id": "m5_wrist_rot", "top": 40,  "left": 380,  "attrs": { "hornColor": "#e8601c" } },
+    { "type": "wokwi-servo", "id": "m6_gripper",   "top": 120, "left": 380,  "attrs": { "hornColor": "#f4ecdc", "horn": "double" } }
+  ],
+  "connections": [
+    [ "m1_base:PWM", "uno:11", "orange", [] ],
+    [ "m1_base:V+", "uno:5V", "red", [] ],
+    [ "m1_base:GND", "uno:GND.1", "black", [] ],
+    [ "m2_shoulder:PWM", "uno:10", "orange", [] ],
+    [ "m2_shoulder:V+", "uno:5V", "red", [] ],
+    [ "m2_shoulder:GND", "uno:GND.1", "black", [] ],
+    [ "m3_elbow:PWM", "uno:9", "orange", [] ],
+    [ "m3_elbow:V+", "uno:5V", "red", [] ],
+    [ "m3_elbow:GND", "uno:GND.1", "black", [] ],
+    [ "m4_wrist:PWM", "uno:6", "orange", [] ],
+    [ "m4_wrist:V+", "uno:5V", "red", [] ],
+    [ "m4_wrist:GND", "uno:GND.2", "black", [] ],
+    [ "m5_wrist_rot:PWM", "uno:5", "orange", [] ],
+    [ "m5_wrist_rot:V+", "uno:5V", "red", [] ],
+    [ "m5_wrist_rot:GND", "uno:GND.2", "black", [] ],
+    [ "m6_gripper:PWM", "uno:3", "orange", [] ],
+    [ "m6_gripper:V+", "uno:5V", "red", [] ],
+    [ "m6_gripper:GND", "uno:GND.2", "black", [] ]
+  ],
+  "dependencies": {}
+}

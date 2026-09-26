@@ -1,0 +1,15 @@
+MyBraccio	KEYWORD1
+setTarget	KEYWORD2
+setAll	KEYWORD2
+nudge	KEYWORD2
+stop	KEYWORD2
+setLimits	KEYWORD2
+setSpeed	KEYWORD2
+setSpeedAll	KEYWORD2
+setStepInterval	KEYWORD2
+update	KEYWORD2
+waitUntilStopped	KEYWORD2
+delayWhileMoving	KEYWORD2
+isMoving	KEYWORD2
+angle	KEYWORD2
+target	KEYWORD2

@@ -1,50 +1,137 @@
-# BraccioV2 C++ Masterclass
+---
+hide:
+  - navigation
+  - toc
+---
 
-Welcome to the **BraccioV2 C++ Masterclass**! This is a complete, hands-on learning curriculum designed to take you from a C++ beginner to building your own object-oriented robotic control library for the Arduino platform.
+<div class="hero" markdown>
 
-Embedded systems and robotics require code that is not only highly performant and memory-efficient but also modular and easy to maintain. By learning C++ in the context of the **Braccio V2 Robotic Arm**, you will bridge the gap between abstract computer science concepts and real-world physical hardware.
+<div markdown>
 
-> This community edition is curated by **Tab Precious**, a core member of the **Hardware Innovation Valley Community (HWIVC)** in Buea, Cameroon. It is part of a wider community effort to promote practical robotics and embedded systems learning.
->
-> **Author:** Tab Precious  
-> **LinkedIn:** [Tabu Precious](https://cm.linkedin.com/in/tambu-precious-29bb67217)  
-> **Community:** [HWIVC](https://hwivc.org/)
+# Learn **C++** by programming a <span class="accent">real robot arm</span>
+
+<p class="lead">A free, hands-on course that takes you from “I have never written code” to writing your own
+Arduino library that drives the 6-joint <b>Tinkerkit Braccio</b> robotic arm. You write every line, and the arm runs it.</p>
+
+[Start the course :material-arrow-right:](introduction.md){ .md-button .md-button--primary }
+[Make the arm move in 15 min](hardware/first_move.md){ .md-button }
+
+</div>
+
+![The Tinkerkit Braccio robotic arm](images/imagesB.jpeg)
+
+</div>
+
+<div class="stats">
+<div><b>20</b><span>step-by-step lessons</span></div>
+<div><b>5</b><span>robot projects</span></div>
+<div><b>15</b><span>illustrated diagrams</span></div>
+<div><b>100+</b><span>exercises with solutions</span></div>
+</div>
 
 ---
 
-## Meet the Hardware
+## What you will be able to do
 
-Here is the Braccio V2 Robotic Arm that you will be writing C++ code to control. It has six servo-controlled joints (base rotation, shoulder, elbow, wrist pitch, wrist rotation, and gripper) that require precise coordination, limit handling, and smooth speed curves.
+<div class="grid cards" markdown>
 
-![Braccio Robotic Arm](images/imagesB.jpeg)
+-   :material-language-cpp:{ .lg .middle } **Write real C++**
+
+    ---
+
+    Variables, loops, functions, classes, pointers, references and arrays. You learn the language the way
+    embedded engineers use it, on a chip with only **2 KB of RAM**.
+
+-   :material-robot-industrial:{ .lg .middle } **Control the Braccio**
+
+    ---
+
+    Move six joints smoothly and at the same time, respect safe angle limits, calibrate the arm, and
+    pick up objects with the gripper.
+
+-   :material-package-variant-closed:{ .lg .middle } **Build a library**
+
+    ---
+
+    Take the real **BraccioV2** library apart line by line (and find its bugs), then write
+    your own `MyBraccio` library from scratch.
+
+-   :material-console:{ .lg .middle } **Ship robot projects**
+
+    ---
+
+    Pick & place, a serial command console, teach-and-replay, and inverse kinematics that moves the
+    gripper to an (x, y, z) point.
+
+</div>
 
 ---
 
-## Course Blueprint
+## Meet the hardware
 
-The masterclass is structured as a sequential journey that starts with basic language concepts and ends with deployable hardware libraries:
+![Anatomy of the Braccio arm: six joints M1 to M6 with their Arduino pins and angle ranges](images/braccio_anatomy.svg){ .diagram }
 
-### 📘 [Part 1: C++ Basics & Compilation](Part1_Cpp_Basics/lesson01_compiler.md)
-*Lessons 1–7:* Understading the compiler toolchain, C++ syntax, variable types, scopes, functions, separate compilation (headers vs. source files), include guards, and preprocessor macros.
-
-### 📙 [Part 2: Object-Oriented Programming (OOP)](Part2_OOP/lesson08_classes.md)
-*Lessons 8–11:* Modeling physical robot parts using classes and objects, writing constructors with member initialization lists, enforcing safety through encapsulation, and designing const-safe methods.
-
-### 📗 [Part 3: Pointers, References & Memory](Part3_Memory/lesson12_pointers.md)
-*Lessons 12–15:* Gaining a deep understanding of memory addresses, pointers, C++ references, the difference between Stack and Heap, and managing multi-joint states with memory-aligned arrays.
-
-### 📕 [Part 4: Custom Arduino Library Design](Part4_Arduino_Libraries/lesson16_arduino_ecosystem.md)
-*Lessons 16–20:* Exploring the Arduino IDE build process, dissecting the official BraccioV2 library code, and writing your own custom version of the library (`MyBraccio`) from scratch to import and run on hardware.
+The Braccio has **six servo motors**. Each one is plugged into a numbered pin on the Braccio shield, which sits on
+top of an Arduino UNO. Your C++ program tells each motor which angle to hold, and that is all a robot arm needs.
+Take the full tour in [Meet the Braccio Arm](hardware/meet_the_braccio.md).
 
 ---
 
-## How to Get the Most Out of This Course
+## The learning path
 
-1. **Read & Compile:** Every lesson contains minimal, compilable C++ code snippets. Do not just read them—type them out, compile them using `g++`, and run them to see the results.
-2. **Build the Projects:** Complete the structural projects (such as simulating joint movements) to cement your understanding of how separate components interact.
-3. **Attempt the Exercises:** At the end of each section, try the exercises in the [Practice Workbook](Exercises/exercises_solutions.md) without looking at the solutions first.
-4. **Deploy to Hardware:** If you have an Arduino and a Braccio V2 arm, deploy the library we build in Part 4 and watch your custom C++ code control a physical robot!
+```mermaid
+flowchart LR
+    S([Start Here<br/>set up + first move]) --> P1[Part 1<br/>C++ Basics<br/>L01–07]
+    P1 --> P2[Part 2<br/>Classes<br/>L08–11]
+    P2 --> P3[Part 3<br/>Memory<br/>L12–15]
+    P3 --> P4[Part 4<br/>Libraries<br/>L16–20]
+    P4 --> PR([Projects<br/>P1–P5])
+    P1 -. Arm Lab in every lesson .-> ARM{{🦾 Braccio}}
+    P2 -.-> ARM
+    P3 -.-> ARM
+    P4 -.-> ARM
+    PR --> ARM
+    style S fill:#fde3d3,stroke:#e8601c
+    style PR fill:#fde3d3,stroke:#e8601c
+    style ARM fill:#e8601c,stroke:#b8470f,color:#fff
+```
+
+Every lesson has three parts:
+
+1. **Concept.** A short explanation with a diagram.
+2. **Try it on your PC.** Small programs you can compile anywhere, even in a browser.
+3. **:material-robot-industrial: Arm Lab.** The same idea running on the real Braccio. No arm? Every lab also works
+   in the free [Wokwi simulator](https://wokwi.com/projects/new/arduino-uno) with six servos.
+
+<div class="grid cards" markdown>
+
+-   :material-flag-checkered: **Brand new to programming?**
+
+    Start with the [Introduction](introduction.md), then [set up your tools](getting_started.md).
+
+-   :material-lightning-bolt: **Have an arm on your desk right now?**
+
+    Jump to [Lesson 00: Make the Arm Move](hardware/first_move.md) and come back for the theory.
+
+-   :material-school: **Teaching a class or workshop?**
+
+    See the [Course Roadmap](roadmap.md) for timings, milestones and a suggested 6-week schedule.
+
+-   :material-bookshelf: **Looking for references?**
+
+    See the [BraccioV2 API](Appendix/api_reference.md), the [cheatsheet](Appendix/cheatsheet.md) and the
+    [curated resources](Appendix/resources.md).
+
+</div>
 
 ---
 
-[Next: Course Roadmap](roadmap.md)
+!!! quote "Community Edition"
+    This course is written and maintained by **Tambu Precious**
+    ([LinkedIn](https://cm.linkedin.com/in/tambu-precious-29bb67217)), a core member of the
+    **[Hardware Innovation Valley Community (HWIVC)](https://hwivc.org/)** in Buea, Cameroon, as part of a
+    community effort to make practical robotics and embedded-systems education accessible to everyone.
+
+    It builds on the open-source **[BraccioV2](https://github.com/kk6axq/BraccioV2)** library by **Lukas Severinghaus**,
+    which is itself based on the original **[Arduino Braccio](https://github.com/arduino-libraries/Braccio)** library by
+    Andrea Martino and Angelo Ferrante.

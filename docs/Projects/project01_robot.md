@@ -1,199 +1,203 @@
-# Project 01: Creating a Multi-Joint Robot Simulation
+# Project P1: Arm Simulator (PC)
 
-Now that you have completed Parts 1, 2, and 3, you are ready to combine your C++ syntax, object-oriented design, and memory management skills. 
+<div class="lesson-meta"><span>⏱ 2–3 h</span><span>🎯 Intermediate</span><span>🧩 Uses: Parts 1–3</span><span>💻 No hardware needed</span></div>
 
-In this project, you will build a **Console-Based Robotic Arm Simulator** in C++. This program runs directly on your computer, simulating joint angles, velocity updates, and safety limit checks.
+!!! abstract "What you'll build"
+    A console program that simulates the Braccio: six `Joint` objects with limits and speeds, an `ArmSim` class that
+    plays a routine step by step, ASCII gauges for every joint, and **forward kinematics** that computes where the
+    gripper tip is in space.
 
----
-
-## Project Specification
-
-You will create a simulation consisting of two classes:
-1. **`Joint` Class:** Models a single servo motor.
-   * Private members: `currentAngle`, `targetAngle`, `minLimit`, `maxLimit`, `speed`.
-   * Public members: Constructor, getter methods, setter methods (with bounds check), and an `update()` method that steps the current angle closer to the target.
-2. **`RoboticArm` Class:** Models the arm as a whole.
-   * Contains an array of 4 `Joint` objects (Base, Shoulder, Elbow, Wrist) using composition.
-   * Public members: Constructor, a method to command all joints, an `update()` method, and a method to print the physical positions.
+    **Skills used:** classes & constructors (L08–09), encapsulation (L10), `const` methods (L11), references (L13),
+    arrays of objects (L15), `<cmath>`.
 
 ---
 
-## Step-by-Step Implementation
+## Why simulate?
 
-Create a file named `arm_simulator.cpp` and implement the following sections:
+Simulators let you test motion logic **without risking the hardware**, and without needing an arm at all. Industrial
+robot programmers spend most of their time in simulation (ROS, RoboDK, Gazebo) before touching a real robot.
 
-### 1. The `Joint` Class
+```mermaid
+classDiagram
+    class Joint {
+        -const char* _name
+        -int _min, _max
+        -int _current, _target
+        -int _speed
+        +setTarget(angle) bool
+        +setSpeed(degPerStep) bool
+        +update()
+        +angle() int
+        +isMoving() bool
+    }
+    class ArmSim {
+        -Joint _joints[6]
+        -unsigned long _timeMs
+        +setPose(const int pose[6]) bool
+        +joint(j) Joint&
+        +update()
+        +isMoving() bool
+        +gripperPosition(x&, y&, z&)
+        +print()
+    }
+    ArmSim *-- "6" Joint
+```
+
+---
+
+## Step 1: the `Joint` class
+
+Each joint owns its limits, current angle, target and speed, and keeps the invariant `min ≤ target ≤ max`:
+
 ```cpp
-#include <iostream>
-#include <cmath>
-
 class Joint {
-private:
-    int currentAngle;
-    int targetAngle;
-    const int minLimit;
-    const int maxLimit;
-    const int speed;
-
 public:
-    // Parameterized constructor using member initializer lists
-    Joint(int minL, int maxL, int defaultPos, int spd) 
-        : currentAngle(defaultPos), targetAngle(defaultPos), minLimit(minL), maxLimit(maxL), speed(spd) {}
+  Joint() : Joint("joint", 0, 180, 90) {}                 // needed for arrays of Joint
+  Joint(const char* name, int minAngle, int maxAngle, int home)
+      : _name(name), _min(minAngle), _max(maxAngle), _current(home), _target(home) {}
 
-    // Getters
-    int getCurrentAngle() const { return currentAngle; }
-    int getTargetAngle() const { return targetAngle; }
+  bool setTarget(int angle) {
+    _target = angle < _min ? _min : (angle > _max ? _max : angle);
+    return _target == angle;
+  }
 
-    // Setter with safety clamping
-    bool setTarget(int target) {
-        int clamped = target;
-        if (target < minLimit) clamped = minLimit;
-        if (target > maxLimit) clamped = maxLimit;
-        targetAngle = clamped;
-        return (clamped == target);
-    }
-
-    // Increments/decrements position towards target based on joint speed
-    void update() {
-        if (currentAngle != targetAngle) {
-            int diff = targetAngle - currentAngle;
-            int step = (diff > 0) ? speed : -speed;
-            
-            // Avoid overshooting
-            if (std::abs(step) > std::abs(diff)) {
-                step = diff;
-            }
-            
-            currentAngle += step;
-        }
-    }
+  void update() {                                         // one step, never overshoots
+    int remaining = _target - _current;
+    if (remaining > _speed) remaining = _speed;
+    if (remaining < -_speed) remaining = -_speed;
+    _current += remaining;
+  }
+  // ... getters, setSpeed ...
 };
 ```
 
-### 2. The `RoboticArm` Class
+## Step 2: the `ArmSim` class
+
+`ArmSim` **contains** six joints (composition), initialised in its constructor's initializer list:
+
 ```cpp
-class RoboticArm {
-private:
-    // Composition: Array of 4 Joint objects
-    // Joints: 0 = Base, 1 = Shoulder, 2 = Elbow, 3 = Wrist
-    Joint joints[4];
-
-public:
-    // Constructor initializes each Joint object with custom limits and speeds
-    RoboticArm() : joints{
-        Joint(0, 180, 90, 2),  // Base: limits 0-180, center 90, speed 2
-        Joint(15, 165, 90, 1), // Shoulder: limits 15-165, center 90, speed 1 (slow!)
-        Joint(0, 180, 90, 3),  // Elbow: limits 0-180, center 90, speed 3 (fast!)
-        Joint(0, 180, 90, 2)   // Wrist: limits 0-180, center 90, speed 2
-    } {}
-
-    // Set targets for all joints
-    void commandAll(int b, int s, int e, int w) {
-        joints[0].setTarget(b);
-        joints[1].setTarget(s);
-        joints[2].setTarget(e);
-        joints[3].setTarget(w);
-    }
-
-    // Updates all joints
-    void update() {
-        for (int i = 0; i < 4; ++i) {
-            joints[i].update();
-        }
-    }
-
-    // Check if the arm is still in motion
-    bool isMoving() const {
-        for (int i = 0; i < 4; ++i) {
-            if (joints[i].getCurrentAngle() != joints[i].getTargetAngle()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Prints status in a clean console table
-    void printStatus() const {
-        std::cout << "Base: " << joints[0].getCurrentAngle() 
-                  << " | Shoulder: " << joints[1].getCurrentAngle() 
-                  << " | Elbow: " << joints[2].getCurrentAngle() 
-                  << " | Wrist: " << joints[3].getCurrentAngle() << std::endl;
-    }
-};
+ArmSim()
+    : _joints{Joint("base", 0, 180, 90),    Joint("shoulder", 15, 165, 90),
+              Joint("elbow", 0, 180, 90),   Joint("wrist", 0, 180, 90),
+              Joint("wristRot", 0, 180, 90), Joint("gripper", 10, 73, 50)} {}
 ```
 
-### 3. The `main()` Driver Loop
-```cpp
-int main() {
-    RoboticArm simulator;
-    
-    std::cout << "Starting Robot Arm Simulator..." << std::endl;
-    simulator.printStatus();
-    
-    // Command the arm to new positions
-    std::cout << "\nCommanding Base -> 45, Shoulder -> 30, Elbow -> 120, Wrist -> 180..." << std::endl;
-    simulator.commandAll(45, 30, 120, 180);
-    
-    // Simulation execution loop
-    int steps = 0;
-    while (simulator.isMoving() && steps < 100) {
-        simulator.update();
-        std::cout << "Step " << ++steps << " -> ";
-        simulator.printStatus();
-    }
-    
-    std::cout << "\nTarget positions reached in " << steps << " steps!" << std::endl;
-    return 0;
-}
+`update()` steps every joint and advances a simulated clock by 10 ms, just like BraccioV2's `safeDelay`.
+
+## Step 3: ASCII gauges
+
+Each joint prints a 20-character bar showing where it sits between its limits:
+
+```text
+  shoulder  [######..............]  60
+  gripper   [###.................]  20  moving
 ```
 
 ---
 
-## Compiling and Running
+## Step 4: forward kinematics, "where is the gripper?"
 
-Compile the simulator program in your terminal:
+**Forward kinematics (FK)** answers: *given the joint angles, where is the gripper tip?* Model the side view of the arm
+as three links, each at an angle to the horizontal:
 
-```bash
-g++ -std=c++17 -Wall arm_simulator.cpp -o arm_simulator
+<figure markdown>
+![Arm geometry](../images/kinematics.svg){ .diagram }
+<figcaption>Side view: each link adds its own vector. The base turns that whole side view around the vertical axis.</figcaption>
+</figure>
+
+With servo 90° = "straight up" and elbow/wrist measured **relative** to the previous link:
+
+\[
+\begin{aligned}
+a_1 &= \text{shoulder} \\
+a_2 &= a_1 + (\text{elbow} - 90^\circ) \\
+a_3 &= a_2 + (\text{wrist} - 90^\circ) \\[4pt]
+\text{reach} &= L_1\cos a_1 + L_2\cos a_2 + L_3\cos a_3 \\
+z &= H + L_1\sin a_1 + L_2\sin a_2 + L_3\sin a_3 \\
+x &= \text{reach}\cdot\cos(\text{base}), \qquad y = \text{reach}\cdot\sin(\text{base})
+\end{aligned}
+\]
+
+Approximate Braccio dimensions: \(H\) = 71.5 mm (table to shoulder axis), \(L_1\) = \(L_2\) = 125 mm, \(L_3\) ≈ 195 mm (wrist to
+gripper tip). With every joint at 90°, the tip is at \(z = 71.5 + 125 + 125 + 195 = 516.5\) mm, which matches the Braccio's
+published **52 cm** maximum height. ✅
+
+!!! warning "Your arm may be mirrored"
+    This model assumes "shoulder below 90° leans forward". If your arm leans backward (Lesson 00's direction table),
+    use `180 - shoulder` in the model. The same goes for elbow and wrist. Always measure a few real poses with a ruler.
+
+---
+
+## The complete program
+
+```cpp title="arm_simulator.cpp" linenums="1"
+--8<-- "examples/pc_simulator/arm_simulator.cpp"
 ```
 
-Run the compiled executable:
+Build and run:
 
 ```bash
+g++ -std=c++17 -Wall -Wextra arm_simulator.cpp -o arm_simulator
 ./arm_simulator
 ```
 
-Observe how different joints reach their targets at different times. Because the Shoulder has a speed of `1`, it takes the longest to complete its sweep, whereas the Elbow (speed `3`) reaches its target rapidly.
+```text
+=== Braccio simulator ===
+t =     0 ms
+  base      [##########..........]  90
+  shoulder  [##########..........]  90
+  elbow     [##########..........]  90
+  wrist     [##########..........]  90
+  wristRot  [##########..........]  90
+  gripper   [############........]  50
+  gripper tip at x=   0.0  y=   0.0  z= 516.5 mm
 
----
-
-## Practice Exercises
-
-### Exercise 1: Collision Prevention logic
-Suppose that if the Shoulder angle is less than `30` degrees, the Elbow angle **must not** exceed `110` degrees to prevent the forearm from physically colliding with the base shield of the robot. 
-How would you modify the `RoboticArm::commandAll` method to enforce this spatial safety collision rule?
-
-<details>
-<summary><b>View Solution</b></summary>
-
-Modify `commandAll()` to check the inputs relative to each other:
-
-```cpp
-void commandAll(int b, int s, int e, int w) {
-    // If the shoulder is being commanded lower than 30
-    if (s < 30) {
-        std::cout << "[COLLISION SAFETY] Shoulder is low (<30). Clamping Elbow target to safe limit (110)." << std::endl;
-        if (e > 110) e = 110;
-    }
-    
-    joints[0].setTarget(b);
-    joints[1].setTarget(s);
-    joints[2].setTarget(e);
-    joints[3].setTarget(w);
-}
+--- step 1: new pose ---
+t =   300 ms
+  base      [#####...............]  45
+  shoulder  [######..............]  60
+  elbow     [#############.......] 120
+  wrist     [######..............]  60
+  wristRot  [##########..........]  90
+  gripper   [###.................]  20  moving
+  gripper tip at x= 113.1  y= 113.1  z= 473.6 mm
+...
 ```
-</details>
 
 ---
 
-[Previous: Part 4 - Lesson 20](../Part4_Arduino_Libraries/lesson20_deployment.md) | [Next: Practice Workbook](../Exercises/exercises_solutions.md)
+## Extensions
+
+1. **Collision check.** Make `ArmSim::update()` refuse to continue if the gripper tip's `z` drops below 0 (the table),
+   printing `COLLISION at t = …`.
+2. **Timing report.** After each routine step, print how long it took. Which joint was the slowest?
+3. **CSV export.** Print `t,base,shoulder,elbow,wrist,wristRot,gripper,x,y,z` lines and open them in a spreadsheet to graph the motion.
+4. **Share code with the Arduino.** Move `Joint` into `joint.h` so the *same file* compiles in the simulator and in a sketch.
+   (Tip: avoid `printf` inside `Joint`.)
+5. **Synchronised mode.** Give each joint a speed so they all arrive together (Lesson 13).
+
+??? success "Hint for extension 1"
+    ```cpp
+    bool ArmSim::update() {
+      for (Joint& j : _joints) j.update();
+      _timeMs += 10;
+      double x, y, z;
+      gripperPosition(x, y, z);
+      if (z < 0) {
+        std::printf("COLLISION at t = %lu ms (z = %.1f)\n", _timeMs, z);
+        return false;   // caller stops the routine
+      }
+      return true;
+    }
+    ```
+
+---
+
+## Checklist
+
+- [ ] My simulator compiles with **no warnings** using `-Wall -Wextra`
+- [ ] Out-of-range poses are clamped and reported
+- [ ] The upright pose reports z ≈ 516 mm
+- [ ] I completed at least two extensions
+
+Next: [Project P2 · Pick & Place](project02_pick_and_place.md)

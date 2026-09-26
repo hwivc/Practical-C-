@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 470" width="980" height="470" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="From C++ text to a moving arm">
+<title>From C++ text to a moving arm</title>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+  <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8601c"/></marker>
+  <marker id="arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker>
+  <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f27a3a"/><stop offset="1" stop-color="#d4501a"/></linearGradient>
+  <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b8a95"/><stop offset="1" stop-color="#0d6d77"/></linearGradient>
+</defs>
+<rect x="1" y="1" width="978" height="468" rx="18" fill="#ffffff" stroke="#eadcd2" stroke-width="2"/>
+<text x="32" y="46" font-size="22" font-weight="800" fill="#1f2937">From C++ text to a moving arm</text>
+<text x="32" y="72" font-size="14" fill="#64748b">The build pipeline — the same idea for g++ on your PC and avr-g++ for the Arduino</text>
+<rect x="32" y="110" width="164" height="130" rx="14" fill="#fff7f2" stroke="#e8601c" stroke-width="2"/>
+<circle cx="56" cy="136" r="14" fill="#e8601c"/>
+<text x="56" y="141" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">1</text>
+<text x="78" y="142" font-size="16" fill="#1f2937" font-weight="800" text-anchor="start">Your code</text>
+<text x="48" y="182" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">sketch.ino</text>
+<text x="48" y="204" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">MyBraccio.h / .cpp</text>
+<line x1="198" y1="175" x2="220" y2="175" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="222" y="110" width="164" height="130" rx="14" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+<circle cx="246" cy="136" r="14" fill="#d97706"/>
+<text x="246" y="141" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">2</text>
+<text x="268" y="142" font-size="16" fill="#1f2937" font-weight="800" text-anchor="start">Preprocessor</text>
+<text x="238" y="182" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">#include pasted in</text>
+<text x="238" y="204" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">#define replaced</text>
+<line x1="388" y1="175" x2="410" y2="175" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="412" y="110" width="164" height="130" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<circle cx="436" cy="136" r="14" fill="#2563eb"/>
+<text x="436" y="141" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">3</text>
+<text x="458" y="142" font-size="16" fill="#1f2937" font-weight="800" text-anchor="start">Compiler</text>
+<text x="428" y="182" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">C++ → machine code</text>
+<text x="428" y="204" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">one .o per .cpp</text>
+<line x1="578" y1="175" x2="600" y2="175" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="602" y="110" width="164" height="130" rx="14" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>
+<circle cx="626" cy="136" r="14" fill="#0f766e"/>
+<text x="626" y="141" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">4</text>
+<text x="648" y="142" font-size="16" fill="#1f2937" font-weight="800" text-anchor="start">Linker</text>
+<text x="618" y="182" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">joins .o files +</text>
+<text x="618" y="204" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">Servo, core libs</text>
+<line x1="768" y1="175" x2="790" y2="175" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="792" y="110" width="164" height="130" rx="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="816" cy="136" r="14" fill="#7c3aed"/>
+<text x="816" y="141" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">5</text>
+<text x="838" y="142" font-size="16" fill="#1f2937" font-weight="800" text-anchor="start">Firmware</text>
+<text x="808" y="182" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start" font-family="'JetBrains Mono', Consolas, 'Courier New', monospace">sketch.hex</text>
+<text x="808" y="204" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">(bytes for the chip)</text>
+<path d="M852,242 C852,300 760,300 700,318" stroke="#1f2937" stroke-width="2.5" fill="none" marker-end="url(#arr)" />
+<rect x="470" y="300" width="230" height="96" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="585" y="330" font-size="15" fill="#1f2937" font-weight="800" text-anchor="middle">Upload over USB</text>
+<text x="585" y="352" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="middle">avrdude writes the .hex</text>
+<text x="585" y="372" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="middle">into the chip's flash</text>
+<line x1="470" y1="348" x2="380" y2="348" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arr)"/>
+<rect x="150" y="300" width="230" height="96" rx="14" fill="#fff7f2" stroke="#e8601c" stroke-width="2"/>
+<text x="265" y="330" font-size="15" fill="#1f2937" font-weight="800" text-anchor="middle">ATmega328P runs it</text>
+<text x="265" y="352" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="middle">setup() once, loop() forever</text>
+<text x="265" y="372" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="middle">→ pins 3,5,6,9,10,11 pulse</text>
+<line x1="150" y1="348" x2="118" y2="348" stroke="#e8601c" stroke-width="2.5" marker-end="url(#arrO)"/>
+<rect x="33.8" y="358.8" width="50.400000000000006" height="2.5200000000000005" rx="0.56" fill="#dcc29a" stroke="#b89868" stroke-width="1.5"/>
+<path d="M45.56,358.8 A13.440000000000001,13.440000000000001 0 0 1 72.44000000000001,358.8 Z" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2"/>
+<ellipse cx="59.00000000000001" cy="358.24" rx="13.440000000000001" ry="1.12" fill="#b8470f" opacity=".35"/>
+<path d="M53.68000000000001,349.0 L54.52000000000001,339.2 L63.480000000000004,339.2 L64.32000000000001,349.0 Z" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2"/>
+<rect x="55.36000000000001" y="340.88" width="7.280000000000001" height="5.040000000000001" rx="0.8400000000000001" fill="#374151" transform="rotate(-20 59.00000000000001 343.4)"/>
+<rect x="64.46000000000001" y="317.78000000000003" width="7.280000000000001" height="5.040000000000001" rx="0.8400000000000001" fill="#374151" transform="rotate(-20 68.10000000000001 320.3)"/>
+<rect x="84.76" y="307.98" width="7.280000000000001" height="5.040000000000001" rx="0.8400000000000001" fill="#374151" transform="rotate(-20 88.4 310.5)"/>
+<line x1="59.00000000000001" y1="343.4" x2="68.10000000000001" y2="320.3" stroke="#b8470f" stroke-width="7.000000000000001" stroke-linecap="round"/>
+<line x1="59.00000000000001" y1="343.4" x2="68.10000000000001" y2="320.3" stroke="url(#orangeGrad)" stroke-width="6.44" stroke-linecap="round"/>
+<line x1="59.00000000000001" y1="343.4" x2="68.10000000000001" y2="320.3" stroke="#ffffff" stroke-opacity=".18" stroke-width="2.254" stroke-linecap="round"/>
+<line x1="68.10000000000001" y1="320.3" x2="88.4" y2="310.5" stroke="#b8470f" stroke-width="6.16" stroke-linecap="round"/>
+<line x1="68.10000000000001" y1="320.3" x2="88.4" y2="310.5" stroke="url(#orangeGrad)" stroke-width="5.6000000000000005" stroke-linecap="round"/>
+<line x1="68.10000000000001" y1="320.3" x2="88.4" y2="310.5" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.9600000000000002" stroke-linecap="round"/>
+<line x1="88.4" y1="310.5" x2="99.60000000000001" y2="307.0" stroke="#b8470f" stroke-width="5.32" stroke-linecap="round"/>
+<line x1="88.4" y1="310.5" x2="99.60000000000001" y2="307.0" stroke="url(#orangeGrad)" stroke-width="4.760000000000001" stroke-linecap="round"/>
+<line x1="88.4" y1="310.5" x2="99.60000000000001" y2="307.0" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.666" stroke-linecap="round"/>
+<rect x="96.52000000000001" y="303.36" width="6.16" height="7.280000000000001" rx="1.12" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2" transform="rotate(-17 99.60000000000001 307.0)"/>
+<path d="M102.4,303.64000000000004 L116.4,299.72 L116.96000000000001,301.40000000000003 L103.24000000000001,305.6" fill="#f4ecdc" stroke="#b9a988" stroke-width="2"/>
+<path d="M102.4,307.56 L117.52000000000001,308.4 L117.24000000000001,306.71999999999997 L103.24000000000001,305.6" fill="#f4ecdc" stroke="#b9a988" stroke-width="2"/>
+<line x1="112.2" y1="301.68" x2="116.68" y2="300.28000000000003" stroke="#1f2937" stroke-width="0.7000000000000001" stroke-linecap="round"/>
+<line x1="113.32000000000001" y1="306.71999999999997" x2="117.52000000000001" y2="307.56" stroke="#1f2937" stroke-width="0.7000000000000001" stroke-linecap="round"/>
+<circle cx="59.00000000000001" cy="343.4" r="2.1" fill="#1f2937"/>
+<circle cx="59.00000000000001" cy="343.4" r="0.9" fill="#cbd5e1"/>
+<circle cx="68.10000000000001" cy="320.3" r="2.1" fill="#1f2937"/>
+<circle cx="68.10000000000001" cy="320.3" r="0.9" fill="#cbd5e1"/>
+<circle cx="88.4" cy="310.5" r="2.1" fill="#1f2937"/>
+<circle cx="88.4" cy="310.5" r="0.9" fill="#cbd5e1"/>
+<circle cx="99.60000000000001" cy="307.0" r="1.54" fill="#1f2937"/>
+<circle cx="99.60000000000001" cy="307.0" r="0.7" fill="#cbd5e1"/>
+<text x="32" y="440" font-size="13" fill="#64748b" font-weight="normal" text-anchor="start">Clicking ✓ Verify in the Arduino IDE runs steps 1–5. Clicking → Upload also does the last two.</text>
+</svg>

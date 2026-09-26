@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 620" width="980" height="620" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="Anatomy of the Braccio arm">
+<title>Anatomy of the Braccio arm</title>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker>
+  <marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e8601c"/></marker>
+  <marker id="arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker>
+  <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f27a3a"/><stop offset="1" stop-color="#d4501a"/></linearGradient>
+  <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b8a95"/><stop offset="1" stop-color="#0d6d77"/></linearGradient>
+</defs>
+<rect x="1" y="1" width="978" height="618" rx="18" fill="#ffffff" stroke="#eadcd2" stroke-width="2"/>
+<text x="32" y="46" font-size="22" font-weight="800" fill="#1f2937">Anatomy of the Braccio arm</text>
+<text x="32" y="72" font-size="14" fill="#64748b">Six servo motors, six Arduino pins, one C++ program</text>
+<rect x="210.0" y="540.0" width="360.0" height="18.0" rx="4.0" fill="#dcc29a" stroke="#b89868" stroke-width="1.5"/>
+<path d="M294.0,540.0 A96.0,96.0 0 0 1 486.0,540.0 Z" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2"/>
+<ellipse cx="390.0" cy="536.0" rx="96.0" ry="8.0" fill="#b8470f" opacity=".35"/>
+<path d="M352.0,470.0 L358.0,400.0 L422.0,400.0 L428.0,470.0 Z" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2"/>
+<rect x="364.0" y="412.0" width="52.0" height="36.0" rx="6.0" fill="#374151" transform="rotate(-20 390.0 430.0)"/>
+<rect x="429.0" y="247.0" width="52.0" height="36.0" rx="6.0" fill="#374151" transform="rotate(-20 455.0 265.0)"/>
+<rect x="574.0" y="177.0" width="52.0" height="36.0" rx="6.0" fill="#374151" transform="rotate(-20 600.0 195.0)"/>
+<line x1="390.0" y1="430.0" x2="455.0" y2="265.0" stroke="#b8470f" stroke-width="50.0" stroke-linecap="round"/>
+<line x1="390.0" y1="430.0" x2="455.0" y2="265.0" stroke="url(#orangeGrad)" stroke-width="46.0" stroke-linecap="round"/>
+<line x1="390.0" y1="430.0" x2="455.0" y2="265.0" stroke="#ffffff" stroke-opacity=".18" stroke-width="16.099999999999998" stroke-linecap="round"/>
+<line x1="455.0" y1="265.0" x2="600.0" y2="195.0" stroke="#b8470f" stroke-width="44.0" stroke-linecap="round"/>
+<line x1="455.0" y1="265.0" x2="600.0" y2="195.0" stroke="url(#orangeGrad)" stroke-width="40.0" stroke-linecap="round"/>
+<line x1="455.0" y1="265.0" x2="600.0" y2="195.0" stroke="#ffffff" stroke-opacity=".18" stroke-width="14.0" stroke-linecap="round"/>
+<line x1="600.0" y1="195.0" x2="680.0" y2="170.0" stroke="#b8470f" stroke-width="38.0" stroke-linecap="round"/>
+<line x1="600.0" y1="195.0" x2="680.0" y2="170.0" stroke="url(#orangeGrad)" stroke-width="34.0" stroke-linecap="round"/>
+<line x1="600.0" y1="195.0" x2="680.0" y2="170.0" stroke="#ffffff" stroke-opacity=".18" stroke-width="11.899999999999999" stroke-linecap="round"/>
+<rect x="658.0" y="144.0" width="44.0" height="52.0" rx="8.0" fill="url(#orangeGrad)" stroke="#b8470f" stroke-width="2" transform="rotate(-17 680.0 170.0)"/>
+<path d="M700.0,146.0 L800.0,118.0 L804.0,130.0 L706.0,160.0" fill="#f4ecdc" stroke="#b9a988" stroke-width="2"/>
+<path d="M700.0,174.0 L808.0,180.0 L806.0,168.0 L706.0,160.0" fill="#f4ecdc" stroke="#b9a988" stroke-width="2"/>
+<line x1="770.0" y1="132.0" x2="802.0" y2="122.0" stroke="#1f2937" stroke-width="5.0" stroke-linecap="round"/>
+<line x1="778.0" y1="168.0" x2="808.0" y2="174.0" stroke="#1f2937" stroke-width="5.0" stroke-linecap="round"/>
+<circle cx="390.0" cy="430.0" r="15.0" fill="#1f2937"/>
+<circle cx="390.0" cy="430.0" r="6.8" fill="#cbd5e1"/>
+<circle cx="455.0" cy="265.0" r="15.0" fill="#1f2937"/>
+<circle cx="455.0" cy="265.0" r="6.8" fill="#cbd5e1"/>
+<circle cx="600.0" cy="195.0" r="15.0" fill="#1f2937"/>
+<circle cx="600.0" cy="195.0" r="6.8" fill="#cbd5e1"/>
+<circle cx="680.0" cy="170.0" r="11.0" fill="#1f2937"/>
+<circle cx="680.0" cy="170.0" r="5.0" fill="#cbd5e1"/>
+<path d="M240.0,558 A150,26 0 0 0 540.0,558" stroke="#e8601c" stroke-width="3" fill="none" marker-end="url(#arrO)" marker-start="url(#arrO)"/>
+<path d="M412.0,391.9 A44,44 0 0 0 348.7,415.0" stroke="#e8601c" stroke-width="3" fill="none" marker-end="url(#arrO)" marker-start="url(#arrO)"/>
+<path d="M451.3,223.2 A42,42 0 0 0 415.5,279.4" stroke="#e8601c" stroke-width="3" fill="none" marker-end="url(#arrO)" marker-start="url(#arrO)"/>
+<path d="M630.6,169.3 A40,40 0 0 0 569.4,169.3" stroke="#e8601c" stroke-width="3" fill="none" marker-end="url(#arrO)" marker-start="url(#arrO)"/>
+<ellipse cx="694.0" cy="166.0" rx="10" ry="30" transform="rotate(-17 694.0 166.0)" stroke="#e8601c" stroke-width="3" fill="none" marker-end="url(#arrO)"/>
+<line x1="300" y1="497" x2="390.0" y2="500.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="390.0" cy="500.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<line x1="300" y1="387" x2="390.0" y2="430.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="390.0" cy="430.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<line x1="300" y1="227" x2="455.0" y2="265.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="455.0" cy="265.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<line x1="560" y1="142" x2="600.0" y2="195.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="600.0" cy="195.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<line x1="720" y1="277" x2="680.0" y2="170.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="680.0" cy="170.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<line x1="800" y1="76" x2="780.0" y2="148.0" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4"/>
+<circle cx="780.0" cy="148.0" r="5" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<rect x="40" y="470" width="260" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="40" y="470" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="72" cy="497" r="15" fill="#e8601c"/>
+<text x="72" y="502" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M1</text>
+<text x="96" y="493" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Base rotation</text>
+<text x="96" y="513" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 11 · 0°–180°</text>
+<rect x="40" y="360" width="260" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="40" y="360" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="72" cy="387" r="15" fill="#e8601c"/>
+<text x="72" y="392" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M2</text>
+<text x="96" y="383" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Shoulder</text>
+<text x="96" y="403" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 10 · 15°–165°</text>
+<rect x="40" y="200" width="260" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="40" y="200" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="72" cy="227" r="15" fill="#e8601c"/>
+<text x="72" y="232" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M3</text>
+<text x="96" y="223" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Elbow</text>
+<text x="96" y="243" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 9 · 0°–180°</text>
+<rect x="430" y="88" width="260" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="430" y="88" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="462" cy="115" r="15" fill="#e8601c"/>
+<text x="462" y="120" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M4</text>
+<text x="486" y="111" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Wrist (pitch)</text>
+<text x="486" y="131" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 6 · 0°–180°</text>
+<rect x="720" y="250" width="240" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="720" y="250" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="752" cy="277" r="15" fill="#e8601c"/>
+<text x="752" y="282" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M5</text>
+<text x="776" y="273" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Wrist rotation</text>
+<text x="776" y="293" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 5 · 0°–180°</text>
+<rect x="725" y="22" width="240" height="54" rx="12" fill="#ffffff" stroke="#e5d6cc" stroke-width="1.5"/>
+<rect x="725" y="22" width="8" height="54" rx="4" fill="#e8601c"/>
+<circle cx="757" cy="49" r="15" fill="#e8601c"/>
+<text x="757" y="54" font-size="13" fill="#fff" font-weight="800" text-anchor="middle">M6</text>
+<text x="781" y="45" font-size="15" fill="#1f2937" font-weight="700" text-anchor="start">Gripper</text>
+<text x="781" y="65" font-size="12.5" fill="#64748b" font-weight="normal" text-anchor="start">pin 3 · 10° open – 73° closed</text>
+<rect x="730" y="460" width="225" height="118" rx="12" fill="#fff7f2" stroke="#f6d3c0" stroke-width="1.5"/>
+<text x="746" y="486" font-size="14" fill="#b8470f" font-weight="800" text-anchor="start">Quick facts</text>
+<text x="746" y="508" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">• 6 servo motors (M1–M6)</text>
+<text x="746" y="527" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">• Reach up to ~80 cm span</text>
+<text x="746" y="546" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">• 150 g payload at 32 cm</text>
+<text x="746" y="565" font-size="12.5" fill="#1f2937" font-weight="normal" text-anchor="start">• 5 V, 4–5 A external supply</text>
+</svg>

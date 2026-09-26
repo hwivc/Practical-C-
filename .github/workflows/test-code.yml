@@ -1,0 +1,47 @@
+name: Test course code
+
+on:
+  push:
+    branches: [main]
+    paths: ["examples/**", "BraccioV2.*", ".github/workflows/test-code.yml"]
+  pull_request:
+    paths: ["examples/**", "BraccioV2.*", ".github/workflows/test-code.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Lesson 20: unit tests for MyBraccio that run on a PC with fake Arduino headers.
+  pc-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build tests
+        working-directory: examples/pc_tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -I fake -I ../libraries/MyBraccio/src \
+              test_mybraccio.cpp ../libraries/MyBraccio/src/MyBraccio.cpp -o test_mybraccio
+      - name: Run tests
+        working-directory: examples/pc_tests
+        run: ./test_mybraccio
+
+  # Compile every Arm Lab, project and library example for the Arduino UNO.
+  compile-sketches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/compile-sketches@v1
+        with:
+          fqbn: arduino:avr:uno
+          enable-warnings-report: true
+          libraries: |
+            - name: Servo
+            - name: BraccioV2
+            - source-path: ./examples/libraries/ArmPoses
+            - source-path: ./examples/libraries/MyBraccio
+          sketch-paths: |
+            - examples/arm_labs
+            - examples/projects
+            - examples/libraries/ArmPoses/examples
+            - examples/libraries/MyBraccio/examples
