@@ -13,7 +13,7 @@
 
 <img src="docs/images/braccio_anatomy.svg" width="760" alt="Anatomy of the Braccio arm">
 
-### 👉 [**theafricanjiant.github.io/Practical-C-**](https://theafricanjiant.github.io/Practical-C-/) 👈
+### 👉 [**Read on Webpage**](https://hwivc.github.io/Practical-C-/) 👈
 
 </div>
 
